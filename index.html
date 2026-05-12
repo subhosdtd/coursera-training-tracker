@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Coursera Training Tracker — SAIL</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,900&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f4f7ff;
+  --paper: #ffffff;
+  --ink: #0f172a;
+  --ink-soft: #475569;
+  --ink-mute: #94a3b8;
+  --rule: #e2e8f0;
+  --steel: #2563eb;
+  --steel-dark: #1d4ed8;
+  --copper: #f97316;
+  --copper-light: #fb923c;
+  --amber: #fbbf24;
+  --good: #10b981;
+  --warn: #f59e0b;
+  --alert: #ef4444;
+  --dropout: #be123c;
+  --on-track: #3b82f6;
+  --purple: #a855f7;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--bg); color: var(--ink); font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+body { background-image: radial-gradient(ellipse at top left, rgba(249,115,22,0.10), transparent 55%), radial-gradient(ellipse at bottom right, rgba(37,99,235,0.12), transparent 55%), radial-gradient(ellipse at center, rgba(168,85,247,0.05), transparent 70%); min-height: 100vh; }
+
+.masthead { border-bottom: 2px solid var(--ink); padding: 28px 40px 24px; background: var(--paper); position: relative; }
+.masthead::before { content: ''; position: absolute; bottom: -6px; left: 0; right: 0; height: 1px; background: var(--ink); }
+.masthead-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; flex-wrap: wrap; gap: 12px; }
+
+.brand-row { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-top: 8px; flex-wrap: wrap; }
+.brand-left { display: flex; align-items: center; gap: 20px; flex: 1; min-width: 280px; }
+.sail-logo { height: 64px; width: auto; object-fit: contain; flex-shrink: 0; filter: drop-shadow(0 2px 4px rgba(15,23,42,0.08)); }
+.brand-titles { display: flex; flex-direction: column; }
+
+.emblem { display: flex; flex-direction: column; align-items: flex-end; padding-left: 20px; border-left: 1px solid var(--rule); font-family: 'IBM Plex Sans', sans-serif; flex-shrink: 0; }
+.emblem-main { font-size: 10.5px; color: var(--ink-soft); font-weight: 500; letter-spacing: 0.15px; line-height: 1.35; white-space: nowrap; text-align: right; }
+.emblem-main strong { color: var(--ink); font-weight: 600; }
+.emblem-mark { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.emblem-symbol { height: 26px; width: auto; object-fit: contain; }
+.emblem-words { line-height: 1; text-align: left; }
+.emblem-words .ew-1 { display: block; font-size: 9px; font-weight: 800; color: var(--ink); letter-spacing: 0.9px; }
+.emblem-words .ew-2 { display: block; font-size: 6.5px; font-weight: 500; color: var(--ink-mute); letter-spacing: 1.2px; margin-top: 1px; }
+
+@media (max-width: 720px) {
+  .brand-row { flex-direction: column; align-items: flex-start; }
+  .emblem { padding-left: 0; border-left: none; padding-top: 16px; border-top: 1px solid var(--rule); align-items: flex-start; width: 100%; }
+  .emblem-main, .emblem-words { text-align: left; }
+  .emblem-mark { margin-top: 6px; }
+}
+.eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-mute); }
+.eyebrow .dot { display: inline-block; width: 6px; height: 6px; background: var(--copper); border-radius: 50%; margin-right: 8px; vertical-align: middle; box-shadow: 0 0 8px var(--copper); }
+h1.title { font-family: 'Fraunces', serif; font-weight: 900; font-size: 48px; line-height: 1; letter-spacing: -0.03em; color: var(--ink); margin: 0 0 6px; }
+h1.title em { font-style: italic; font-weight: 400; background: linear-gradient(90deg, var(--steel), var(--purple), var(--copper)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.subtitle { font-family: 'Fraunces', serif; font-style: italic; font-size: 18px; color: var(--ink-soft); font-weight: 400; }
+.snapshot-info { display: flex; gap: 24px; margin-top: 16px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-soft); flex-wrap: wrap; align-items: center; }
+.snapshot-info span strong { color: var(--ink); }
+
+/* ====== TRANCHE TOGGLE ====== */
+.tranche-toggle { display: inline-flex; gap: 8px; margin-top: 16px; align-items: center; }
+.tranche-btn { padding: 10px 20px; background: var(--paper); border: 1.5px solid var(--rule); font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); cursor: pointer; transition: all 0.2s; border-radius: 999px; position: relative; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 1px 2px rgba(15,23,42,0.04); }
+.tranche-btn:hover { color: var(--ink); border-color: var(--steel); transform: translateY(-1px); box-shadow: 0 4px 10px rgba(37,99,235,0.15); }
+.tranche-btn.active { color: var(--paper); border-color: transparent; box-shadow: 0 4px 12px rgba(37,99,235,0.35); }
+.tranche-btn[data-tranche="ALL"].active { background: linear-gradient(135deg, #1e293b, #475569); box-shadow: 0 4px 12px rgba(30,41,59,0.4); }
+.tranche-btn[data-tranche="1"].active { background: linear-gradient(135deg, var(--steel), var(--purple)); box-shadow: 0 4px 12px rgba(37,99,235,0.45); }
+.tranche-btn[data-tranche="2"].active { background: linear-gradient(135deg, var(--copper), #ec4899); box-shadow: 0 4px 12px rgba(249,115,22,0.45); }
+.tranche-btn .count { font-weight: 400; opacity: 0.65; font-size: 10px; padding: 2px 8px; background: rgba(15,23,42,0.06); border-radius: 999px; }
+.tranche-btn.active .count { background: rgba(255,255,255,0.22); opacity: 1; }
+.tranche-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-mute); margin-right: 4px; align-self: center; }
+.tranche-btn .count { font-weight: 400; opacity: 0.7; margin-left: 6px; }
+.tranche-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-mute); margin-right: 12px; align-self: center; }
+
+.tabs { display: flex; gap: 8px; padding: 14px 40px; background: linear-gradient(to bottom, var(--paper) 0%, var(--bg) 100%); border-bottom: 1px solid var(--rule); overflow-x: auto; position: sticky; top: 0; z-index: 50; box-shadow: 0 2px 8px rgba(15,23,42,0.04); }
+.tab { padding: 12px 22px; font-family: 'IBM Plex Sans', sans-serif; font-weight: 600; font-size: 14.5px; letter-spacing: 0.01em; color: var(--ink-soft); background: var(--paper); border: 1.5px solid var(--rule); border-radius: 10px; cursor: pointer; position: relative; white-space: nowrap; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); display: inline-flex; align-items: center; gap: 10px; box-shadow: 0 1px 2px rgba(15,23,42,0.04); }
+.tab:hover { color: var(--ink); border-color: var(--steel); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(37,99,235,0.18); }
+.tab.active { color: var(--paper); border-color: transparent; background: linear-gradient(135deg, var(--steel) 0%, var(--purple) 55%, var(--copper) 100%); box-shadow: 0 6px 18px rgba(37,99,235,0.40), inset 0 1px 0 rgba(255,255,255,0.15); transform: translateY(-1px); }
+.tab.active:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(37,99,235,0.50), inset 0 1px 0 rgba(255,255,255,0.15); }
+.tab-count { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-mute); font-weight: 500; padding: 2px 9px; background: rgba(15,23,42,0.06); border-radius: 999px; margin-left: 0; }
+.tab.active .tab-count { background: rgba(255,255,255,0.22); color: var(--paper); }
+
+.main { padding: 32px 40px 64px; max-width: 1600px; margin: 0 auto; }
+.panel { display: none; animation: fadeIn 0.3s ease; }
+.panel.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.kpi-grid-summary { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.kpi { background: var(--paper); border: 1px solid var(--rule); padding: 18px; position: relative; overflow: hidden; border-radius: 6px; box-shadow: 0 1px 2px rgba(15,23,42,0.04); }
+.kpi::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--steel); }
+.kpi.copper::before { background: var(--copper); }
+.kpi.purple::before { background: var(--purple); }
+.kpi.good::before { background: var(--good); }
+.kpi.on-track::before { background: var(--on-track); }
+.kpi.warn::before { background: var(--warn); }
+.kpi.alert::before { background: var(--alert); }
+.kpi.dropout::before { background: var(--dropout); }
+.kpi.clickable { cursor: pointer; transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s; }
+.kpi.clickable:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(15,23,42,0.08); border-color: var(--ink-soft); }
+.kpi.clickable:hover::after { content: '↓ filter'; position: absolute; bottom: 6px; right: 8px; font-family: 'JetBrains Mono', monospace; font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-mute); opacity: 0.6; }
+.kpi.clickable.kpi-active { border-width: 2px; padding: 17px; }
+.kpi.clickable.kpi-active.good { border-color: var(--good); background: linear-gradient(135deg, var(--paper) 0%, rgba(16,185,129,0.06) 100%); }
+.kpi.clickable.kpi-active.on-track { border-color: var(--on-track); background: linear-gradient(135deg, var(--paper) 0%, rgba(59,130,246,0.06) 100%); }
+.kpi.clickable.kpi-active.warn { border-color: var(--warn); background: linear-gradient(135deg, var(--paper) 0%, rgba(251,191,36,0.08) 100%); }
+.kpi.clickable.kpi-active.alert { border-color: var(--alert); background: linear-gradient(135deg, var(--paper) 0%, rgba(239,68,68,0.06) 100%); }
+.kpi.clickable.kpi-active.dropout { border-color: var(--dropout); background: linear-gradient(135deg, var(--paper) 0%, rgba(190,18,60,0.06) 100%); }
+.kpi.clickable.kpi-active::after { content: '✓ active'; position: absolute; bottom: 6px; right: 8px; font-family: 'JetBrains Mono', monospace; font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink); font-weight: 700; opacity: 1; }
+.kpi-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 6px; }
+.kpi-value { font-family: 'Fraunces', serif; font-size: 38px; font-weight: 700; line-height: 1; letter-spacing: -0.02em; color: var(--ink); }
+.kpi-value .unit { font-size: 16px; color: var(--ink-mute); font-weight: 400; margin-left: 4px; }
+.kpi-pct { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-mute); margin-top: 6px; font-weight: 500; }
+.kpi-delta { display: inline-flex; align-items: center; gap: 4px; font-family: 'JetBrains Mono', monospace; font-size: 11px; margin-top: 6px; padding: 2px 8px; border-radius: 3px; font-weight: 500; }
+.kpi-delta.up { background: rgba(16,185,129,0.15); color: #047857; }
+.kpi-delta.down { background: rgba(239,68,68,0.15); color: #b91c1c; }
+.kpi-delta.flat { background: rgba(148,163,184,0.15); color: var(--ink-mute); }
+
+.kpi-section-title { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+.kpi-section-title::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
+.kpi-section-title .sum-note { font-size: 9px; color: var(--ink-mute); letter-spacing: 0.05em; text-transform: none; font-weight: 400; }
+
+.section-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--rule); flex-wrap: wrap; gap: 12px; }
+.section-head h2 { font-family: 'Fraunces', serif; font-weight: 700; font-size: 26px; letter-spacing: -0.01em; }
+.section-head h2 em { font-style: italic; color: var(--copper); font-weight: 400; }
+.section-meta { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-mute); }
+
+.entity-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-bottom: 28px; }
+.entity-card { background: var(--paper); border: 1px solid var(--rule); padding: 16px; cursor: pointer; transition: all 0.2s; position: relative; border-radius: 6px; }
+.entity-card:hover { border-color: var(--steel); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(37,99,235,0.12); }
+.entity-name { font-family: 'Fraunces', serif; font-weight: 600; font-size: 17px; margin-bottom: 8px; letter-spacing: -0.01em; }
+.entity-stats { display: flex; gap: 16px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-soft); flex-wrap: wrap; }
+.entity-stats strong { color: var(--ink); font-weight: 600; }
+.entity-bar { height: 4px; background: var(--rule); margin-top: 10px; position: relative; overflow: hidden; border-radius: 2px; }
+.entity-bar-fill { position: absolute; top: 0; left: 0; height: 100%; background: linear-gradient(90deg, var(--steel) 0%, var(--purple) 50%, var(--copper) 100%); transition: width 0.4s; }
+
+.filter-bar { background: var(--paper); border: 1px solid var(--rule); padding: 16px 20px; margin-bottom: 16px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; border-radius: 6px; }
+.filter-group { display: flex; flex-direction: column; gap: 4px; }
+.filter-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-mute); }
+.filter-bar select, .filter-bar input { background: var(--bg); border: 1px solid var(--rule); padding: 7px 10px; font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; color: var(--ink); min-width: 140px; cursor: pointer; border-radius: 4px; }
+.filter-bar select:focus, .filter-bar input:focus { outline: none; border-color: var(--steel); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
+.filter-bar input { min-width: 200px; }
+.filter-reset { margin-left: auto; align-self: flex-end; background: var(--ink); color: var(--paper); border: none; padding: 8px 14px; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; border-radius: 4px; }
+.filter-reset:hover { background: var(--copper); }
+
+.table-wrap { background: var(--paper); border: 1px solid var(--rule); overflow-x: auto; border-radius: 6px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead { background: var(--ink); color: var(--paper); }
+th { text-align: left; padding: 12px 14px; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500; white-space: nowrap; cursor: pointer; user-select: none; }
+th:hover { background: var(--steel-dark); }
+th .sort-ind { color: var(--copper); margin-left: 4px; font-size: 9px; }
+td { padding: 11px 14px; border-bottom: 1px solid var(--rule); vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+td.name { font-weight: 500; color: var(--ink); }
+td.email { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-mute); }
+td.phone { font-family: 'JetBrains Mono', monospace; font-size: 12px; white-space: nowrap; }
+td.phone .phone-link { color: var(--steel); text-decoration: none; font-weight: 500; padding: 2px 6px; border-radius: 3px; transition: background 0.15s, color 0.15s; }
+td.phone .phone-link:hover { background: rgba(37,99,235,0.1); color: var(--steel-dark); }
+td.phone .phone-na { color: var(--ink-mute); font-style: italic; font-size: 11px; }
+
+/* ======== GROUP HEADER ROWS ======== */
+tr.group-plant td { padding: 14px 16px 12px; background: linear-gradient(90deg, rgba(37,99,235,0.08), rgba(168,85,247,0.05) 60%, transparent); border-top: 2px solid var(--ink); border-bottom: 1px solid var(--rule); }
+tr.group-plant.is-plant td { background: linear-gradient(90deg, rgba(37,99,235,0.10), rgba(168,85,247,0.06) 60%, transparent); }
+tr.group-plant.is-dept td { background: linear-gradient(90deg, rgba(249,115,22,0.10), rgba(236,72,153,0.04) 60%, transparent); border-top-color: var(--copper); }
+tr.group-plant:first-child td { border-top: none; }
+tr.group-plant .grp-name { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; margin-right: 14px; }
+tr.group-plant .grp-meta { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-soft); margin-right: 14px; }
+tr.group-plant .grp-meta strong { color: var(--ink); }
+tr.group-plant .grp-tags { display: inline-flex; gap: 6px; vertical-align: middle; flex-wrap: wrap; }
+tr.group-plant .grp-tag { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; padding: 2px 8px; border-radius: 999px; font-weight: 600; letter-spacing: 0.04em; }
+tr.group-plant .grp-tag.good { background: rgba(16,185,129,0.18); color: #047857; }
+tr.group-plant .grp-tag.alert { background: rgba(239,68,68,0.18); color: #b91c1c; }
+tr.group-plant .grp-tag.dropout { background: rgba(190,18,60,0.18); color: #9f1239; }
+
+tr.group-dept td { padding: 6px 16px 6px 32px; background: rgba(15,23,42,0.025); border-bottom: 1px solid var(--rule); }
+tr.group-dept .grp-dept-marker { color: var(--ink-mute); margin-right: 8px; font-family: 'JetBrains Mono', monospace; }
+tr.group-dept .grp-dept-name { font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; font-weight: 600; color: var(--ink); letter-spacing: 0.01em; margin-right: 12px; }
+tr.group-dept .grp-meta-sm { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-mute); }
+tr.group-dept em { font-style: italic; color: var(--ink-mute); font-weight: 400; }
+
+tr:hover td { background: rgba(37,99,235,0.04); }
+tr.group-plant:hover td, tr.group-dept:hover td { background: inherit; }
+td.dept { font-size: 12px; color: var(--ink-soft); }
+td.dept .unmapped { color: var(--ink-mute); font-style: italic; }
+td.num { font-family: 'JetBrains Mono', monospace; text-align: right; }
+td.pct { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+
+.badge { display: inline-block; padding: 3px 10px; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.05em; font-weight: 600; border-radius: 4px; white-space: nowrap; }
+.badge-distinctive { background: rgba(16,185,129,0.18); color: #047857; border: 1px solid rgba(16,185,129,0.45); }
+.badge-on-track { background: rgba(59,130,246,0.18); color: #1d4ed8; border: 1px solid rgba(59,130,246,0.45); }
+.badge-attention { background: rgba(251,191,36,0.25); color: #b45309; border: 1px solid rgba(251,191,36,0.55); }
+.badge-escalation { background: rgba(239,68,68,0.18); color: #b91c1c; border: 1px solid rgba(239,68,68,0.45); }
+.badge-dropout { background: rgba(190,18,60,0.18); color: #9f1239; border: 1px solid rgba(190,18,60,0.45); }
+
+.growth-cell { font-family: 'JetBrains Mono', monospace; font-size: 12px; text-align: right; font-weight: 600; }
+.growth-up { color: var(--good); }
+.growth-down { color: var(--alert); }
+.growth-flat { color: var(--ink-mute); }
+
+.chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 16px; margin-bottom: 28px; }
+.chart-card { background: var(--paper); border: 1px solid var(--rule); padding: 24px; border-radius: 6px; }
+.chart-title { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.01em; }
+.chart-subtitle { font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; color: var(--ink-mute); margin-bottom: 20px; }
+
+.bar-chart { display: flex; flex-direction: column; gap: 10px; }
+.bar-row { display: grid; grid-template-columns: 180px 1fr 70px; gap: 12px; align-items: center; font-size: 12px; }
+.bar-label { font-family: 'IBM Plex Sans', sans-serif; color: var(--ink-soft); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar-track { height: 22px; background: var(--bg); border: 1px solid var(--rule); position: relative; overflow: hidden; border-radius: 3px; }
+.bar-fill { height: 100%; background: linear-gradient(90deg, #2563eb 0%, #a855f7 50%, #f97316 100%); position: relative; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+.bar-value { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink); text-align: right; font-weight: 600; }
+
+.status-donut { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+.donut-svg { flex-shrink: 0; }
+.donut-legend { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 200px; }
+.legend-item { display: flex; align-items: center; gap: 10px; font-size: 12px; }
+.legend-swatch { width: 12px; height: 12px; flex-shrink: 0; border-radius: 2px; }
+.legend-label { flex: 1; color: var(--ink-soft); }
+.legend-value { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--ink); }
+
+.growth-chart { padding: 20px 0; }
+.growth-month-row { display: grid; grid-template-columns: 80px 1fr; gap: 16px; align-items: center; margin-bottom: 16px; }
+.growth-month-label { font-family: 'Fraunces', serif; font-style: italic; font-size: 16px; color: var(--ink-soft); }
+.growth-bar-container { position: relative; height: 36px; background: var(--bg); border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; }
+.growth-bar { height: 100%; background: linear-gradient(90deg, #2563eb, #a855f7, #f97316); display: flex; align-items: center; justify-content: flex-end; padding-right: 12px; color: var(--paper); font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+.growth-bar.april { background: linear-gradient(90deg, #64748b, #94a3b8); }
+.growth-summary { margin-top: 12px; padding: 16px; background: linear-gradient(135deg, rgba(37,99,235,0.06), rgba(249,115,22,0.06)); border-left: 3px solid var(--copper); border-radius: 4px; }
+.growth-summary-stat { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 700; background: linear-gradient(90deg, var(--steel), var(--copper)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.growth-summary-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-mute); margin-top: 4px; }
+
+.empty { padding: 60px 20px; text-align: center; color: var(--ink-mute); font-family: 'Fraunces', serif; font-style: italic; font-size: 16px; }
+
+.sub-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.sub-tab { padding: 6px 14px; background: var(--paper); border: 1px solid var(--rule); font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-soft); cursor: pointer; transition: all 0.15s; border-radius: 4px; }
+.sub-tab:hover { border-color: var(--steel); color: var(--steel); }
+.sub-tab.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+footer { padding: 24px 40px; border-top: 1px solid var(--rule); text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-mute); letter-spacing: 0.1em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-top">
+    <span class="eyebrow"><span class="dot"></span>SAIL · McKinsey Upskilling Programme</span>
+    <span class="eyebrow">Snapshot · 11 May 2026</span>
+  </div>
+  <div class="brand-row">
+    <div class="brand-left">
+      <img class="sail-logo" src="data:image/png;base64,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" alt="SAIL">
+      <div class="brand-titles">
+        <h1 class="title">Coursera Training <em>Tracker</em></h1>
+  <p class="subtitle">A live dashboard of course completion across plants &amp; mines, central functions &amp; learning paths.</p>
+      </div>
+    </div>
+    <div class="emblem" aria-label="Developed by SAIL Digital Transformation Division">
+      <div class="emblem-main"><strong>Developed by</strong><br>SAIL Digital Transformation Division</div>
+      <div class="emblem-mark">
+        <img class="emblem-symbol" src="data:image/png;base64,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" alt="">
+        <div class="emblem-words">
+          <span class="ew-1">ENDLESS</span>
+          <span class="ew-2">POSSIBILITIES</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="snapshot-info">
+    <span class="tranche-label">View:</span>
+    <div class="tranche-toggle" id="tranche-toggle">
+      <button class="tranche-btn active" data-tranche="ALL">All Tranches<span class="count" id="cnt-all-tr">124</span></button>
+      <button class="tranche-btn" data-tranche="1">Tranche 1<span class="count" id="cnt-t1">75</span></button>
+      <button class="tranche-btn" data-tranche="2">Tranche 2<span class="count" id="cnt-t2">49</span></button>
+    </div>
+  </div>
+  <div class="snapshot-info">
+    <span><strong id="hdr-total">124</strong> candidates</span>
+    <span><strong id="hdr-plants">12</strong> plants &amp; mines</span>
+    <span><strong id="hdr-depts">7</strong> central functions</span>
+    <span><strong>5</strong> learning paths</span>
+    <span>Comparing <strong>02 Apr</strong> → <strong>11 May 2026</strong></span>
+  </div>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button class="tab active" data-tab="overview">Overview</button>
+  <button class="tab" data-tab="plants">Plants &amp; Mines <span class="tab-count" id="cnt-plants"></span></button>
+  <button class="tab" data-tab="departments">Central Function <span class="tab-count" id="cnt-departments"></span></button>
+  <button class="tab" data-tab="analytics">Growth &amp; Analytics</button>
+  <button class="tab" data-tab="all">All Candidates <span class="tab-count" id="cnt-all"></span></button>
+</nav>
+
+<main class="main">
+  <section class="panel active" id="panel-overview">
+    <div class="kpi-section-title">Summary <span class="sum-note">overall metrics for current view</span></div>
+    <div class="kpi-grid kpi-grid-summary" id="overview-kpis-summary"></div>
+    <div class="kpi-section-title">Status Breakdown <span class="sum-note">all five categories sum to total candidates</span></div>
+    <div class="kpi-grid" id="overview-kpis-status"></div>
+    <div class="chart-grid">
+      <div class="chart-card">
+        <div class="chart-title">Status Distribution</div>
+        <div class="chart-subtitle">Where candidates currently stand</div>
+        <div class="status-donut" id="status-donut"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Completion by Plant / Entity</div>
+        <div class="chart-subtitle">Average completion rate · sorted high→low</div>
+        <div class="bar-chart" id="entity-bars"></div>
+      </div>
+    </div>
+    <div class="section-head"><h2>Quick view <em>· by entity</em></h2><span class="section-meta">Tap a card to jump in</span></div>
+    <div class="entity-grid" id="overview-entities"></div>
+  </section>
+
+  <section class="panel" id="panel-plants"></section>
+  <section class="panel" id="panel-departments"></section>
+
+  <section class="panel" id="panel-analytics">
+    <div class="kpi-grid kpi-grid-summary" id="analytics-kpis"></div>
+    <div class="chart-grid">
+      <div class="chart-card">
+        <div class="chart-title">Course completions · April vs May</div>
+        <div class="chart-subtitle">Total completions across current view</div>
+        <div class="growth-chart" id="growth-totals"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Growth by Entity</div>
+        <div class="chart-subtitle">New courses completed since April 2</div>
+        <div class="bar-chart" id="growth-by-entity"></div>
+      </div>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-card">
+        <div class="chart-title">Path-wise Performance</div>
+        <div class="chart-subtitle">Avg completion % by learning path</div>
+        <div class="bar-chart" id="path-bars"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Top Movers</div>
+        <div class="chart-subtitle">Highest course growth · April → May</div>
+        <div class="bar-chart" id="top-movers"></div>
+      </div>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-card" style="grid-column: 1 / -1;">
+        <div class="chart-title">Department Performance</div>
+        <div class="chart-subtitle">Completion % across functional departments · only mapped depts</div>
+        <div class="bar-chart" id="dept-bars"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-all"></section>
+</main>
+
+<footer>Coursera Training Tracker · SAIL × McKinsey · Snapshots 02 Apr &amp; 11 May 2026 · Developed by SAIL Digital Transformation Division</footer>
+
+<script>
+const DATA_ALL = [{"sn":1,"name":"Abhijnan Banerjee","entityOrig":"Durgapur Steel Plant","plant":"Durgapur Steel Plant","dept":"Coke Ovens","category":"Plants","grade":"E5","path":"Data Scientist","email":"abhijnan.banerjee@sail.in","phone":"9434792506","tranche":1,"assigned":15,"completed":6,"completionPct":40.0,"status":"Needs attention","aprCompleted":6,"growth":0,"notEnrolled":false,"learningHours":50,"uniqueCourses":4,"daysInactive":1,"mappedFromNew":true},{"sn":2,"name":"Abhishek Chakraborty","entityOrig":"Durgapur Steel Plant","plant":"Durgapur Steel Plant","dept":"C&IT","category":"Plants","grade":"E5","path":"Data Engineer","email":"achakraborty@sail.in","phone":"9434792409","tranche":1,"assigned":12,"completed":0,"completionPct":0.0,"status":"Possible dropout","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":true},{"sn":3,"name":"Abhishek Kumar Mishra","entityOrig":"Rourkela Steel Plant","plant":"Rourkela Steel Plant","dept":"Blast Furnace","category":"Plants","grade":"E1","path":"Data Scientist","email":"abhishek.mishra@sail.in","phone":"8895500080","tranche":1,"assigned":15,"completed":11,"completionPct":73.3,"status":"On-track","aprCompleted":6,"growth":5,"notEnrolled":false,"learningHours":14,"uniqueCourses":5,"daysInactive":1,"mappedFromNew":true},{"sn":4,"name":"Aindrila Chanda","entityOrig":"Mines","plant":"CMLO - OGOM","dept":"Central Coordination (Mines)","category":"Plants","grade":"E5","path":"Delivery Lead","email":"aindrilachanda@sail.in","phone":"8895503018","tranche":1,"assigned":10,"completed":0,"completionPct":0.0,"status":"Possible dropout","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":true},{"sn":5,"name":"Akhil U K","entityOrig":"Bhilai Steel Plant","plant":"Bhilai Steel Plant","dept":"Sinter Plant","category":"Plants","grade":"E4","path":"Data Engineer","email":"akhiluk@sail.in","phone":"9407981729","tranche":1,"assigned":12,"completed":6,"completionPct":50.0,"status":"Needs attention","aprCompleted":0,"growth":6,"notEnrolled":false,"learningHours":3,"uniqueCourses":2,"daysInactive":0,"mappedFromNew":true},{"sn":6,"name":"Akshaya Kumar Behera","entityOrig":"Rourkela Steel Plant","plant":"Rourkela Steel Plant","dept":"Steel Melting Shop","category":"Plants","grade":"E4","path":"Data Scientist","email":"akshayakumar.behera@sail.in","phone":"8895504253","tranche":1,"assigned":15,"completed":13,"completionPct":86.7,"status":"Distinctive","aprCompleted":9,"growth":4,"notEnrolled":false,"learningHours":24,"uniqueCourses":4,"daysInactive":1,"mappedFromNew":true},{"sn":7,"name":"Aman Suhela","entityOrig":"Bokaro Steel Plant","plant":"Bokaro Steel Plant","dept":"Projects","category":"Plants","grade":"E2","path":"Data Engineer","email":"aman.suhela@sail.in","phone":"8986875608","tranche":1,"assigned":12,"completed":0,"completionPct":0.0,"status":"Possible dropout","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":0,"uniqueCourses":1,"daysInactive":40,"mappedFromNew":true},{"sn":8,"name":"Amit Bokade","entityOrig":"Bhilai Steel Plant","plant":"Bhilai Steel Plant","dept":"A&D","category":"Plants","grade":"E4","path":"Data Engineer","email":"akbokade@sail.in","phone":"9407980346","tranche":1,"assigned":12,"completed":11,"completionPct":91.7,"status":"Distinctive","aprCompleted":3,"growth":8,"notEnrolled":false,"learningHours":13,"uniqueCourses":2,"daysInactive":16,"mappedFromNew":true},{"sn":9,"name":"Amit Kumar","entityOrig":"Bhilai Steel Plant","plant":"Bhilai Steel Plant","dept":"A&D","category":"Plants","grade":"E7","path":"Delivery Lead","email":"amitkumar2@sail.in","phone":"9407981804","tranche":1,"assigned":10,"completed":10,"completionPct":100.0,"status":"Distinctive","aprCompleted":7,"growth":3,"notEnrolled":false,"learningHours":1,"uniqueCourses":1,"daysInactive":25,"mappedFromNew":true},{"sn":10,"name":"Aneesh PA","entityOrig":"SDTD Ranchi","plant":"SDTD Ranchi","dept":"SDTD Ranchi","category":"Departments","grade":"E5","path":"Data Architect","email":"aneesh@sail.in","phone":"8986880327","tranche":1,"assigned":15,"completed":12,"completionPct":80.0,"status":"Distinctive","aprCompleted":5,"growth":7,"notEnrolled":false,"learningHours":39,"uniqueCourses":11,"daysInactive":0,"mappedFromNew":true},{"sn":11,"name":"Anil Kumar Baranwal","entityOrig":"Bokaro Steel Plant","plant":"Bokaro Steel Plant","dept":"C&A","category":"Plants","grade":"E7","path":"Delivery Lead","email":"ak.barnwal@sail.in","phone":"8986871586","tranche":1,"assigned":10,"completed":0,"completionPct":0.0,"status":"Possible dropout","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":2,"uniqueCourses":1,"daysInactive":29,"mappedFromNew":true},{"sn":12,"name":"Anindita Ghosh","entityOrig":"Durgapur Steel Plant","plant":"Durgapur Steel Plant","dept":"Research And Control Lab","category":"Plants","grade":"E4","path":"Data Scientist","email":"aninditaghosh@sail.in","phone":"9434792389","tranche":1,"assigned":15,"completed":4,"completionPct":26.7,"status":"Needs escalation","aprCompleted":1,"growth":3,"notEnrolled":false,"learningHours":5,"uniqueCourses":1,"daysInactive":17,"mappedFromNew":true},{"sn":13,"name":"Ankit Kumar Mahato","entityOrig":"IISCO Steel Plant","plant":"IISCO Steel Plant","dept":"Coke Ovens","category":"Plants","grade":"E3","path":"Data Engineer","email":"ankit.mahato@sail.in","phone":"9434776301","tranche":1,"assigned":12,"completed":0,"completionPct":0.0,"status":"Possible dropout","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":3,"uniqueCourses":1,"daysInactive":4,"mappedFromNew":true},{"sn":14,"name":"Anshul Gangwar","entityOrig":"Bhilai Steel Plant","plant":"Bhilai Steel Plant","dept":"A&D","category":"Plants","grade":"E4","path":"Data Scientist","email":"anshulgangwar@sail.in","phone":"9407984016","tranche":1,"assigned":15,"completed":7,"completionPct":46.7,"status":"Needs attention","aprCompleted":6,"growth":1,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":true},{"sn":15,"name":"Antariksh Gupta","entityOrig":"SDTD Ranchi","plant":"SDTD Ranchi","dept":"SDTD Ranchi","category":"Departments","grade":"E5","path":"Delivery Lead","email":"antariksh@sail.in","phone":"8986880169","tranche":1,"assigned":10,"completed":0,"completionPct":0.0,"status":"Possible dropout","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":1,"uniqueCourses":1,"daysInactive":8,"mappedFromNew":true},{"sn":16,"name":"Apoorva Khare","entityOrig":"CMO","plant":"CMO","dept":"Sales And Marketing","category":"Departments","grade":"E2","path":"Data Scientist","email":"apoorva@sail.in","phone":"9477702804","tranche":1,"assigned":15,"completed":0,"completionPct":0.0,"status":"Possible dropout","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":0,"uniqueCourses":1,"daysInactive":40,"mappedFromNew":true},{"sn":17,"name":"Ashish Agrawal","entityOrig":"Durgapur Steel Plant","plant":"Durgapur Steel Plant","dept":"Section mill","category":"Plants","grade":"E5","path":"Data Engineer","email":"ashish08agarwal@sail.in","phone":"9434792781","tranche":1,"assigned":12,"completed":9,"completionPct":75.0,"status":"On-track","aprCompleted":9,"growth":0,"notEnrolled":false,"learningHours":60,"uniqueCourses":5,"daysInactive":0,"mappedFromNew":true},{"sn":18,"name":"Avanish Dubey","entityOrig":"Bhilai Steel Plant","plant":"Bhilai Steel Plant","dept":"Material Recovery Department","category":"Plants","grade":"E5","path":"Data Engineer","email":"avanishdubey@sail.in","phone":"9407980068","tranche":1,"assigned":12,"completed":7,"completionPct":58.3,"status":"Needs attention","aprCompleted":3,"growth":4,"notEnrolled":false,"learningHours":6,"uniqueCourses":3,"daysInactive":7,"mappedFromNew":true},{"sn":19,"name":"Bata Krishna Giri","entityOrig":"Rourkela Steel Plant","plant":"Rourkela Steel Plant","dept":"Research And Control Lab","category":"Plants","grade":"E2","path":"Data Scientist","email":"batakrishna.giri@sail.in","phone":"9658785195","tranche":1,"assigned":15,"completed":3,"completionPct":20.0,"status":"Needs escalation","aprCompleted":0,"growth":3,"notEnrolled":false,"learningHours":3,"uniqueCourses":2,"daysInactive":13,"mappedFromNew":true},{"sn":20,"name":"Biraj Kundu","entityOrig":"Durgapur Steel Plant","plant":"Durgapur Steel Plant","dept":"ERS","category":"Plants","grade":"E5","path":"Visualization Engineer","email":"birajkundu@sail.in","phone":"9434792026","tranche":1,"assigned":14,"completed":1,"completionPct":7.1,"status":"Needs escalation","aprCompleted":1,"growth":0,"notEnrolled":false,"learningHours":8,"uniqueCourses":2,"daysInactive":23,"mappedFromNew":true},{"sn":21,"name":"Birendra Kumar","entityOrig":"Mines","plant":"CMLO - CGOM","dept":"Mining Of Limestone","category":"Plants","grade":"E6","path":"Delivery Lead","email":"birendrakumar@sail.in","phone":"9407982925","tranche":1,"assigned":10,"completed":0,"completionPct":0.0,"status":"Possible dropout","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":true},{"sn":22,"name":"Chetan Ashok Futane","entityOrig":"Bhilai Steel Plant","plant":"Bhilai Steel Plant","dept":"Coke Ovens","category":"Plants","grade":"E4","path":"Data Scientist","email":"chetanashok@sail.in","phone":"9407982548","tranche":1,"assigned":15,"completed":15,"completionPct":100.0,"status":"Distinctive","aprCompleted":8,"growth":7,"notEnrolled":false,"learningHours":1,"uniqueCourses":2,"daysInactive":11,"mappedFromNew":true},{"sn":23,"name":"CSSD Kowshik","entityOrig":"SDTD Ranchi","plant":"SDTD Ranchi","dept":"SDTD Ranchi","category":"Departments","grade":"E4","path":"Data Architect","email":"dharmakowshik@sail.in","phone":"7070504765","tranche":1,"assigned":15,"completed":15,"completionPct":100.0,"status":"Distinctive","aprCompleted":11,"growth":4,"notEnrolled":false,"learningHours":16,"uniqueCourses":5,"daysInactive":1,"mappedFromNew":true},{"sn":24,"name":"Deepak Kumar","entityOrig":"IISCO Steel Plant","plant":"IISCO Steel Plant","dept":"A&D","category":"Plants","grade":"E5","path":"Delivery Lead","email":"deepak.kumar1@sail.in","phone":"9434777703","tranche":1,"assigned":10,"completed":6,"completionPct":60.0,"status":"On-track","aprCompleted":0,"growth":6,"notEnrolled":false,"learningHours":1,"uniqueCourses":1,"daysInactive":3,"mappedFromNew":true},{"sn":25,"name":"Deepak Kumar","entityOrig":"Mines","plant":"CMLO - OGOM","dept":"Electrical Department","category":"Plants","grade":"E5","path":"Delivery Lead","email":"deepakkumar@sail.in","phone":"8895502415","tranche":1,"assigned":10,"completed":1,"completionPct":10.0,"status":"Needs escalation","aprCompleted":1,"growth":0,"notEnrolled":false,"learningHours":3,"uniqueCourses":1,"daysInactive":0,"mappedFromNew":true},{"sn":26,"name":"Deependra Singh","entityOrig":"IISCO Steel Plant","plant":"IISCO Steel Plant","dept":"A&D","category":"Plants","grade":"E4","path":"Data Engineer","email":"deependra.singh@sail.in","phone":"9434776593","tranche":1,"assigned":12,"completed":2,"completionPct":16.7,"status":"Needs escalation","aprCompleted":0,"growth":2,"notEnrolled":false,"learningHours":9,"uniqueCourses":3,"daysInactive":0,"mappedFromNew":true},{"sn":27,"name":"Firaz Ahmad","entityOrig":"IISCO Steel Plant","plant":"IISCO Steel Plant","dept":"A&D","category":"Plants","grade":"E4","path":"Data Scientist","email":"firaz.ahmad@sail.in","phone":"9434777056","tranche":1,"assigned":15,"completed":4,"completionPct":26.7,"status":"Needs escalation","aprCompleted":1,"growth":3,"notEnrolled":false,"learningHours":2,"uniqueCourses":1,"daysInactive":0,"mappedFromNew":true},{"sn":28,"name":"Gaurav Rathore","entityOrig":"Bokaro Steel Plant","plant":"Bokaro Steel Plant","dept":"C&A","category":"Plants","grade":"E5","path":"Data Engineer","email":"gaurav.rathore@sail.in","phone":"8986874519","tranche":1,"assigned":12,"completed":2,"completionPct":16.7,"status":"Needs escalation","aprCompleted":2,"growth":0,"notEnrolled":false,"learningHours":3,"uniqueCourses":1,"daysInactive":2,"mappedFromNew":true},{"sn":29,"name":"Geetanjali Verma","entityOrig":"Bhilai Steel Plant","plant":"Bhilai Steel Plant","dept":"A&D","category":"Plants","grade":"E6","path":"Delivery Lead","email":"geetanjaliverma@sail.in","phone":"9407981801","tranche":1,"assigned":10,"completed":10,"completionPct":100.0,"status":"Distinctive","aprCompleted":6,"growth":4,"notEnrolled":false,"learningHours":3,"uniqueCourses":2,"daysInactive":33,"mappedFromNew":true},{"sn":30,"name":"Gomathi Jayaraman","entityOrig":"CMO","plant":"CMO","dept":null,"category":"Departments","grade":"E8","path":"Delivery Lead","email":"gomathi@sail.in","phone":"9868394800","tranche":1,"assigned":10,"completed":8,"completionPct":80.0,"status":"Distinctive","aprCompleted":5,"growth":3,"notEnrolled":false,"learningHours":11,"uniqueCourses":4,"daysInactive":0,"mappedFromNew":true},{"sn":31,"name":"Himank Khulbe","entityOrig":"CMO","plant":"CMO","dept":"Sales And Marketing","category":"Departments","grade":"E4","path":"Data Scientist","email":"himank@sail.in","phone":"9945189888","tranche":1,"assigned":15,"completed":0,"completionPct":0.0,"status":"Possible dropout","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":2,"uniqueCourses":1,"daysInactive":38,"mappedFromNew":true},{"sn":32,"name":"Jaswant Paswan","entityOrig":"Others","plant":"Alloy Steels Plant","dept":"C&IT","category":"Plants","grade":"E3","path":"Data Scientist","email":"jaswant.paswan@sail.in","phone":"9434798607","tranche":1,"assigned":15,"completed":0,"completionPct":0.0,"status":"Possible dropout","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":1,"uniqueCourses":1,"daysInactive":41,"mappedFromNew":true},{"sn":33,"name":"Jyotish Saikia","entityOrig":"Durgapur Steel Plant","plant":"Durgapur Steel Plant","dept":"C&IT","category":"Plants","grade":"E1","path":"Data Scientist","email":"jyotishsaikia@sail.in","phone":"9434793042","tranche":1,"assigned":15,"completed":4,"completionPct":26.7,"status":"Needs escalation","aprCompleted":2,"growth":2,"notEnrolled":false,"learningHours":1,"uniqueCourses":2,"daysInactive":1,"mappedFromNew":true},{"sn":34,"name":"Krishna Soren","entityOrig":"Mines","plant":"CMLO - JGOM","dept":"Contract Cell","category":"Plants","grade":"E5","path":"Delivery Lead","email":"krishnasoren@sail.in","phone":"8986881042","tranche":1,"assigned":10,"completed":0,"completionPct":0.0,"status":"Possible dropout","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":1,"uniqueCourses":1,"daysInactive":27,"mappedFromNew":true},{"sn":35,"name":"Mahadev Singh Rana","entityOrig":"Bhilai Steel Plant","plant":"Bhilai Steel Plant","dept":"A&D","category":"Plants","grade":"E3","path":"Data Scientist","email":"mahadev030290@sail.in","phone":"9407984172","tranche":1,"assigned":15,"completed":15,"completionPct":100.0,"status":"Distinctive","aprCompleted":14,"growth":1,"notEnrolled":false,"learningHours":33,"uniqueCourses":6,"daysInactive":2,"mappedFromNew":true},{"sn":36,"name":"Md. Faraz Abbasi","entityOrig":"Rourkela Steel Plant","plant":"Rourkela Steel Plant","dept":"New Plate Mill","category":"Plants","grade":"E6","path":"Delivery Lead","email":"faraz.abbasi@sail.in","phone":"8895500475","tranche":1,"assigned":10,"completed":5,"completionPct":50.0,"status":"Needs attention","aprCompleted":0,"growth":5,"notEnrolled":false,"learningHours":7,"uniqueCourses":2,"daysInactive":9,"mappedFromNew":true},{"sn":37,"name":"Munish Gupta","entityOrig":"Bhilai Steel Plant","plant":"Bhilai Steel Plant","dept":"I&A","category":"Plants","grade":"E4","path":"Visualization Engineer","email":"munishgupta18@sail.in","phone":"9407980218","tranche":1,"assigned":14,"completed":19,"completionPct":135.7,"status":"Distinctive","aprCompleted":19,"growth":0,"notEnrolled":false,"learningHours":37,"uniqueCourses":5,"daysInactive":null,"mappedFromNew":true},{"sn":54,"name":"Rudra Prasad","entityOrig":"CMO","plant":"CMO","dept":"C&IT","category":"Departments","grade":"E5","path":"Delivery Lead","email":"rudrap@sail.in","phone":"9477702189","tranche":1,"assigned":10,"completed":0,"completionPct":0.0,"status":"Possible dropout","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":2,"uniqueCourses":1,"daysInactive":8,"mappedFromNew":true},{"sn":39,"name":"Navin Kumar","entityOrig":"SDTD Ranchi","plant":"SDTD Ranchi","dept":"SDTD Ranchi","category":"Departments","grade":"E5","path":"Delivery Lead","email":"navin.kumar@sail.in","phone":"9434777417","tranche":1,"assigned":10,"completed":6,"completionPct":60.0,"status":"On-track","aprCompleted":6,"growth":0,"notEnrolled":false,"learningHours":9,"uniqueCourses":2,"daysInactive":9,"mappedFromNew":true},{"sn":40,"name":"Neha Gupta","entityOrig":"SDTD Ranchi","plant":"SDTD Ranchi","dept":"SDTD Ranchi","category":"Departments","grade":"E5","path":"Delivery Lead","email":"nehagupta@sail.in","phone":"9871002101","tranche":1,"assigned":10,"completed":11,"completionPct":110.0,"status":"Distinctive","aprCompleted":11,"growth":0,"notEnrolled":false,"learningHours":45,"uniqueCourses":6,"daysInactive":1,"mappedFromNew":true},{"sn":41,"name":"Pankaj Priya","entityOrig":"Others","plant":"SAIL Safety Organization","dept":"Safety","category":"Departments","grade":"E6","path":"Delivery Lead","email":"priya.pankaj@sail.in","phone":"8895500371","tranche":1,"assigned":10,"completed":0,"completionPct":0.0,"status":"Possible dropout","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":6,"uniqueCourses":1,"daysInactive":14,"mappedFromNew":true},{"sn":42,"name":"Parichay Bhattacharjee","entityOrig":"SDTD Ranchi","plant":"SDTD Ranchi","dept":"SDTD Ranchi","category":"Departments","grade":"E4","path":"Data Scientist","email":"parichay.b@sail.in","phone":"8986875019","tranche":1,"assigned":15,"completed":17,"completionPct":113.3,"status":"Distinctive","aprCompleted":16,"growth":1,"notEnrolled":false,"learningHours":12,"uniqueCourses":13,"daysInactive":0,"mappedFromNew":true},{"sn":43,"name":"Pramod Sahu","entityOrig":"Bokaro Steel Plant","plant":"Bokaro Steel Plant","dept":"Maintenance","category":"Plants","grade":"E1","path":"Visualization Engineer","email":"pramod.sahu@sail.in","phone":"8986876188","tranche":1,"assigned":14,"completed":1,"completionPct":7.1,"status":"Needs escalation","aprCompleted":1,"growth":0,"notEnrolled":false,"learningHours":2,"uniqueCourses":1,"daysInactive":0,"mappedFromNew":true},{"sn":44,"name":"Purnachander . A","entityOrig":"Others","plant":"VISP","dept":"Operation","category":"Plants","grade":"E3","path":"Data Scientist","email":"purnachander.a@sail.in","phone":"9480829156","tranche":1,"assigned":15,"completed":1,"completionPct":6.7,"status":"Needs escalation","aprCompleted":0,"growth":1,"notEnrolled":false,"learningHours":2,"uniqueCourses":1,"daysInactive":38,"mappedFromNew":true},{"sn":45,"name":"Rahul Bose","entityOrig":"SDTD Ranchi","plant":"SDTD Ranchi","dept":"SDTD Ranchi","category":"Departments","grade":"E5","path":"Delivery Lead","email":"rahul.bose@sail.in","phone":"9434776113","tranche":1,"assigned":10,"completed":3,"completionPct":30.0,"status":"Needs attention","aprCompleted":1,"growth":2,"notEnrolled":false,"learningHours":2,"uniqueCourses":2,"daysInactive":9,"mappedFromNew":true},{"sn":46,"name":"Rajeev Ranjan","entityOrig":"Mines","plant":"CMLO - JGOM","dept":"Contract Cell","category":"Plants","grade":"E6","path":"Delivery Lead","email":"rajeevranjan77@sail.in","phone":"9708139340","tranche":1,"assigned":10,"completed":6,"completionPct":60.0,"status":"On-track","aprCompleted":5,"growth":1,"notEnrolled":false,"learningHours":5,"uniqueCourses":1,"daysInactive":2,"mappedFromNew":true},{"sn":47,"name":"Ram Ranjan Choudhary","entityOrig":"SDTD Ranchi","plant":"SDTD Ranchi","dept":"SDTD Ranchi","category":"Departments","grade":"E6","path":"Delivery Lead","email":"rrchoudhary@sail.in","phone":"8986880035","tranche":1,"assigned":10,"completed":6,"completionPct":60.0,"status":"On-track","aprCompleted":5,"growth":1,"notEnrolled":false,"learningHours":0,"uniqueCourses":2,"daysInactive":6,"mappedFromNew":true},{"sn":48,"name":"Ramasetti Naga Venkatesh","entityOrig":"SDTD Ranchi","plant":"SDTD Ranchi","dept":"SDTD Ranchi","category":"Departments","grade":"E1","path":"Data Scientist","email":"rnvenkatesh@sail.in","phone":"9407981381","tranche":1,"assigned":15,"completed":14,"completionPct":93.3,"status":"Distinctive","aprCompleted":14,"growth":0,"notEnrolled":false,"learningHours":36,"uniqueCourses":4,"daysInactive":4,"mappedFromNew":true},{"sn":49,"name":"Ravi Shanker Pandey","entityOrig":"IISCO Steel Plant","plant":"IISCO Steel Plant","dept":"A&D","category":"Plants","grade":"E4","path":"Data Scientist","email":"ravi.pandey@sail.in","phone":"9434776591","tranche":1,"assigned":15,"completed":2,"completionPct":13.3,"status":"Needs escalation","aprCompleted":1,"growth":1,"notEnrolled":false,"learningHours":0,"uniqueCourses":1,"daysInactive":40,"mappedFromNew":true},{"sn":71,"name":"Tarun Mittal","entityOrig":"CMO","plant":"CMO","dept":"Sales And Marketing","category":"Departments","grade":"E4","path":"Data Engineer","email":"tarun.mittal@sail.in","phone":"8340400681","tranche":1,"assigned":12,"completed":0,"completionPct":0.0,"status":"Possible dropout","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":1,"uniqueCourses":1,"daysInactive":29,"mappedFromNew":true},{"sn":51,"name":"Ritesh Kumar","entityOrig":"IISCO Steel Plant","plant":"IISCO Steel Plant","dept":"A&D","category":"Plants","grade":"E3","path":"Data Scientist","email":"ritesh.kumar29@sail.in","phone":"9434777039","tranche":1,"assigned":15,"completed":5,"completionPct":33.3,"status":"Needs attention","aprCompleted":5,"growth":0,"notEnrolled":false,"learningHours":54,"uniqueCourses":7,"daysInactive":1,"mappedFromNew":true},{"sn":52,"name":"Rohit Ranjan","entityOrig":"SDTD Ranchi","plant":"SDTD Ranchi","dept":"SDTD Ranchi","category":"Departments","grade":"E4","path":"Data Engineer","email":"rohit.ranjan@sail.in","phone":"8895504211","tranche":1,"assigned":12,"completed":8,"completionPct":66.7,"status":"On-track","aprCompleted":7,"growth":1,"notEnrolled":false,"learningHours":23,"uniqueCourses":7,"daysInactive":0,"mappedFromNew":true},{"sn":53,"name":"Rosalin Dash","entityOrig":"Rourkela Steel Plant","plant":"Rourkela Steel Plant","dept":"I&A","category":"Plants","grade":"E4","path":"Visualization Engineer","email":"rosalin.dash@sail.in","phone":"8895504223","tranche":1,"assigned":14,"completed":3,"completionPct":21.4,"status":"Needs escalation","aprCompleted":0,"growth":3,"notEnrolled":false,"learningHours":0,"uniqueCourses":1,"daysInactive":41,"mappedFromNew":true},{"sn":96,"name":"Swetanisha Kar","entityOrig":"CMO","plant":"CMO","dept":null,"category":"Departments","grade":"E5","path":"Data Scientist","email":"swetanisha.kar@sail.in","phone":"Not available","tranche":2,"assigned":15,"completed":0,"completionPct":0.0,"status":"Needs escalation","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":55,"name":"Rupesh Singh","entityOrig":"Others","plant":"SAIL Refractory Unit","dept":"Application & Services","category":"Departments","grade":"E1","path":"Data Scientist","email":"rupesh.sru@sail.in","phone":"8986876236","tranche":1,"assigned":15,"completed":0,"completionPct":0.0,"status":"Possible dropout","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":1,"uniqueCourses":2,"daysInactive":30,"mappedFromNew":true},{"sn":56,"name":"S P Rajkumar","entityOrig":"Bhilai Steel Plant","plant":"Bhilai Steel Plant","dept":"A&D","category":"Plants","grade":"E4","path":"Data Scientist","email":"sprajkumar@sail.in","phone":"9407981387","tranche":1,"assigned":15,"completed":15,"completionPct":100.0,"status":"Distinctive","aprCompleted":15,"growth":0,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":true},{"sn":57,"name":"Saket Saurabh","entityOrig":"Rourkela Steel Plant","plant":"Rourkela Steel Plant","dept":"New Plate Mill","category":"Plants","grade":"E3","path":"Data Engineer","email":"saket.saurabh@sail.in","phone":"8895504307","tranche":1,"assigned":12,"completed":6,"completionPct":50.0,"status":"Needs attention","aprCompleted":3,"growth":3,"notEnrolled":false,"learningHours":0,"uniqueCourses":1,"daysInactive":21,"mappedFromNew":true},{"sn":58,"name":"Saroj Kumar","entityOrig":"Bhilai Steel Plant","plant":"Bhilai Steel Plant","dept":"A&D","category":"Plants","grade":"E5","path":"Data Scientist","email":"sarojkumar1@sail.in","phone":"9407984152","tranche":1,"assigned":15,"completed":11,"completionPct":73.3,"status":"On-track","aprCompleted":3,"growth":8,"notEnrolled":false,"learningHours":1,"uniqueCourses":1,"daysInactive":2,"mappedFromNew":true},{"sn":59,"name":"Saswata Gupta","entityOrig":"Rourkela Steel Plant","plant":"Rourkela Steel Plant","dept":"C&IT","category":"Plants","grade":"E3","path":"Data Engineer","email":"saswata.gupta@sail.in","phone":"8895500427","tranche":1,"assigned":12,"completed":4,"completionPct":33.3,"status":"Needs attention","aprCompleted":0,"growth":4,"notEnrolled":false,"learningHours":7,"uniqueCourses":1,"daysInactive":0,"mappedFromNew":true},{"sn":60,"name":"Satish R","entityOrig":"Others","plant":"Salem Steel Plant","dept":"HRM Electrical Department","category":"Plants","grade":"E5","path":"Data Engineer","email":"rsatish@sail.in","phone":"9443069091","tranche":1,"assigned":12,"completed":2,"completionPct":16.7,"status":"Needs escalation","aprCompleted":2,"growth":0,"notEnrolled":false,"learningHours":0,"uniqueCourses":1,"daysInactive":27,"mappedFromNew":true},{"sn":61,"name":"Sethuraman Kannan","entityOrig":"SDTD Ranchi","plant":"SDTD Ranchi","dept":"SDTD Ranchi","category":"Departments","grade":"E5","path":"Data Engineer","email":"sethu@sail.in","phone":"9442108969","tranche":1,"assigned":12,"completed":8,"completionPct":66.7,"status":"On-track","aprCompleted":8,"growth":0,"notEnrolled":false,"learningHours":37,"uniqueCourses":7,"daysInactive":1,"mappedFromNew":true},{"sn":62,"name":"Shweat Kumar Mishra","entityOrig":"Bhilai Steel Plant","plant":"Bhilai Steel Plant","dept":"SMS 3","category":"Plants","grade":"E4","path":"Data Scientist","email":"shweatmishra@sail.in","phone":"9407981392","tranche":1,"assigned":15,"completed":8,"completionPct":53.3,"status":"Needs attention","aprCompleted":3,"growth":5,"notEnrolled":false,"learningHours":7,"uniqueCourses":1,"daysInactive":0,"mappedFromNew":true},{"sn":63,"name":"Sonabh Chandra Pandey","entityOrig":"Mines","plant":"CMLO - CGOM","dept":"Hirri Dolomite Mines","category":"Plants","grade":"E5","path":"Delivery Lead","email":"sonabhchandrapandey@sail.in","phone":"9407982617","tranche":1,"assigned":10,"completed":5,"completionPct":50.0,"status":"Needs attention","aprCompleted":5,"growth":0,"notEnrolled":false,"learningHours":3,"uniqueCourses":2,"daysInactive":34,"mappedFromNew":true},{"sn":64,"name":"Subhadip Sarkar","entityOrig":"SDTD Ranchi","plant":"SDTD Ranchi","dept":"SDTD Ranchi","category":"Departments","grade":"E7","path":"Delivery Lead","email":"subhadip.sarkar@sail.in","phone":"8986871851","tranche":1,"assigned":10,"completed":10,"completionPct":100.0,"status":"Distinctive","aprCompleted":10,"growth":0,"notEnrolled":false,"learningHours":9,"uniqueCourses":3,"daysInactive":2,"mappedFromNew":true},{"sn":65,"name":"Sudhanshu Jamwal","entityOrig":"Bhilai Steel Plant","plant":"Bhilai Steel Plant","dept":"Universal Rail Mill","category":"Plants","grade":"E4","path":"Data Scientist","email":"sjamwal@sail.in","phone":"9407981407","tranche":1,"assigned":15,"completed":15,"completionPct":100.0,"status":"Distinctive","aprCompleted":6,"growth":9,"notEnrolled":false,"learningHours":22,"uniqueCourses":4,"daysInactive":3,"mappedFromNew":true},{"sn":66,"name":"Sudhanshu Shekhar","entityOrig":"Bokaro Steel Plant","plant":"Bokaro Steel Plant","dept":"C&A","category":"Plants","grade":"E6","path":"Delivery Lead","email":"s.shekhar@sail.in","phone":"8986874890","tranche":1,"assigned":10,"completed":6,"completionPct":60.0,"status":"On-track","aprCompleted":6,"growth":0,"notEnrolled":false,"learningHours":1,"uniqueCourses":1,"daysInactive":34,"mappedFromNew":true},{"sn":67,"name":"Sujeet Kumar Pandey","entityOrig":"SDTD Ranchi","plant":"SDTD Ranchi","dept":"SDTD Ranchi","category":"Departments","grade":"E4","path":"Visualization Engineer","email":"sujeetkumar.pandey@sail.in","phone":"8895503330","tranche":1,"assigned":14,"completed":8,"completionPct":57.1,"status":"Needs attention","aprCompleted":2,"growth":6,"notEnrolled":false,"learningHours":6,"uniqueCourses":3,"daysInactive":0,"mappedFromNew":true},{"sn":68,"name":"Suryanarayana Reddy Yarrabothula","entityOrig":"Bokaro Steel Plant","plant":"Bokaro Steel Plant","dept":"Electronics And Telecommunication","category":"Plants","grade":"E4","path":"Data Scientist","email":"y.suryanarayana@sail.in","phone":"8986874724","tranche":1,"assigned":15,"completed":null,"completionPct":null,"status":"Distinctive","aprCompleted":4,"growth":null,"notEnrolled":true,"learningHours":5,"uniqueCourses":5,"daysInactive":0,"mappedFromNew":true},{"sn":69,"name":"Syam Gangadhar Chandika","entityOrig":"Others","plant":"Salem Steel Plant","dept":"Maintenance","category":"Plants","grade":"E5","path":"Data Scientist","email":"sgchandika@sail.in","phone":"9443300341","tranche":1,"assigned":15,"completed":8,"completionPct":53.3,"status":"Needs attention","aprCompleted":7,"growth":1,"notEnrolled":false,"learningHours":9,"uniqueCourses":2,"daysInactive":0,"mappedFromNew":true},{"sn":70,"name":"Tapan Roy","entityOrig":"Durgapur Steel Plant","plant":"Durgapur Steel Plant","dept":"Electrical coordination","category":"Plants","grade":"E7","path":"Delivery Lead","email":"tkroy1971@sail.in","phone":"9434791190","tranche":1,"assigned":10,"completed":8,"completionPct":80.0,"status":"Distinctive","aprCompleted":1,"growth":7,"notEnrolled":false,"learningHours":8,"uniqueCourses":1,"daysInactive":5,"mappedFromNew":true},{"sn":104,"name":"Mayur Prajapati","entityOrig":"CMO","plant":"CMO","dept":null,"category":"Departments","grade":"E2","path":"Visualization Engineer","email":"mayur.prajapati@sail.in","phone":"Not available","tranche":2,"assigned":14,"completed":0,"completionPct":0.0,"status":"Needs escalation","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":72,"name":"Udai Bhan Singh Rathaur","entityOrig":"SDTD Ranchi","plant":"SDTD Ranchi","dept":"SDTD Ranchi","category":"Departments","grade":"E5","path":"Delivery Lead","email":"ubsrathaur@sail.in","phone":"8986881200","tranche":1,"assigned":10,"completed":3,"completionPct":30.0,"status":"Needs attention","aprCompleted":3,"growth":0,"notEnrolled":false,"learningHours":1,"uniqueCourses":1,"daysInactive":7,"mappedFromNew":true},{"sn":73,"name":"Vineet Johri","entityOrig":"Bhilai Steel Plant","plant":"Bhilai Steel Plant","dept":"Blast Furnace","category":"Plants","grade":"E7","path":"Delivery Lead","email":"vineetjohri@sail.in","phone":"9407980349","tranche":1,"assigned":10,"completed":10,"completionPct":100.0,"status":"Distinctive","aprCompleted":8,"growth":2,"notEnrolled":false,"learningHours":10,"uniqueCourses":2,"daysInactive":16,"mappedFromNew":true},{"sn":74,"name":"Vittala Rao Gedela","entityOrig":"Bhilai Steel Plant","plant":"Bhilai Steel Plant","dept":"PPC","category":"Plants","grade":"E5","path":"Data Engineer","email":"gedelav.rao@sail.in","phone":"8986874517","tranche":1,"assigned":12,"completed":12,"completionPct":100.0,"status":"Distinctive","aprCompleted":10,"growth":2,"notEnrolled":false,"learningHours":0,"uniqueCourses":1,"daysInactive":35,"mappedFromNew":true},{"sn":75,"name":"Vivek Gupta","entityOrig":"IISCO Steel Plant","plant":"IISCO Steel Plant","dept":"A&D","category":"Plants","grade":"E4","path":"Visualization Engineer","email":"vivek.gupta25@sail.in","phone":"9434776584","tranche":1,"assigned":14,"completed":0,"completionPct":0.0,"status":"Possible dropout","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":3,"uniqueCourses":2,"daysInactive":2,"mappedFromNew":true},{"sn":76,"name":"Abhijit Das","entityOrig":"Others","plant":"Others (unspecified)","dept":null,"category":"Departments","grade":"E3","path":"Data Scientist","email":"abhijit625@sail.in","phone":"Not available","tranche":2,"assigned":15,"completed":0,"completionPct":0.0,"status":"Needs escalation","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":77,"name":"Abhijit Patnayak","entityOrig":"Rourkela Steel Plant","plant":"Rourkela Steel Plant","dept":null,"category":"Plants","grade":"E3","path":"Data Scientist","email":"abhijit.patnayak@sail.in","phone":"8895504221","tranche":2,"assigned":15,"completed":1,"completionPct":6.7,"status":"Needs attention","aprCompleted":0,"growth":1,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":78,"name":"Abhishek Yadav","entityOrig":"Bhilai Steel Plant","plant":"Bhilai Steel Plant","dept":null,"category":"Plants","grade":"E1","path":"Visualization Engineer","email":"abhiyadav14916@gmail.com","phone":"Not available","tranche":2,"assigned":14,"completed":0,"completionPct":0.0,"status":"Needs escalation","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":79,"name":"Akash Kumar Singh","entityOrig":"Rourkela Steel Plant","plant":"Rourkela Steel Plant","dept":null,"category":"Plants","grade":"E1","path":"Data Engineer","email":"akash.singh@sail.in","phone":"8895500369","tranche":2,"assigned":12,"completed":0,"completionPct":0.0,"status":"Needs escalation","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":80,"name":"Ankit Choudhary","entityOrig":"Bhilai Steel Plant","plant":"Bhilai Steel Plant","dept":null,"category":"Plants","grade":"E1","path":"Data Engineer","email":"ankitchoudhary@sail.in","phone":"Not available","tranche":2,"assigned":12,"completed":0,"completionPct":0.0,"status":"Needs escalation","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":81,"name":"Ankit Kumar Mahato","entityOrig":"IISCO Steel Plant","plant":"IISCO Steel Plant","dept":null,"category":"Plants","grade":"E3","path":"Data Scientist","email":"ankit16tgs@gmail.com","phone":"Not available","tranche":2,"assigned":15,"completed":0,"completionPct":0.0,"status":"Needs escalation","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":111,"name":"Neha Sharma","entityOrig":"CMO","plant":"CMO","dept":null,"category":"Departments","grade":"E4","path":"Data Scientist","email":"neha@sail.in","phone":"Not available","tranche":2,"assigned":15,"completed":0,"completionPct":0.0,"status":"Needs escalation","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":83,"name":"Jitendra Singh Rathore","entityOrig":"Bhilai Steel Plant","plant":"Bhilai Steel Plant","dept":null,"category":"Plants","grade":"E5","path":"Data Scientist","email":"jsrathore@sail.in","phone":"Not available","tranche":2,"assigned":15,"completed":0,"completionPct":0.0,"status":"Needs escalation","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":84,"name":"Lawkesh Kumar","entityOrig":"Mines","plant":"CMLO - OGOM","dept":null,"category":"Plants","grade":"E4","path":"Delivery Lead","email":"lawkeshkumar@sail.in","phone":"8895502451","tranche":2,"assigned":10,"completed":0,"completionPct":0.0,"status":"Needs escalation","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":true},{"sn":85,"name":"Neeraja Sharma","entityOrig":"Bhilai Steel Plant","plant":"Bhilai Steel Plant","dept":null,"category":"Plants","grade":"E6","path":"Data Scientist","email":"neeraja.sharma@sail.in","phone":"Not available","tranche":2,"assigned":15,"completed":4,"completionPct":26.7,"status":"Distinctive","aprCompleted":0,"growth":4,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":86,"name":"Poorvank Sharma","entityOrig":"Bokaro Steel Plant","plant":"Bokaro Steel Plant","dept":null,"category":"Plants","grade":"E1","path":"Data Scientist","email":"poorvank.sharma@sail.in","phone":"8986876159","tranche":2,"assigned":15,"completed":1,"completionPct":6.7,"status":"Needs attention","aprCompleted":0,"growth":1,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":87,"name":"Premdeep Kumar","entityOrig":"Rourkela Steel Plant","plant":"Rourkela Steel Plant","dept":null,"category":"Plants","grade":"E3","path":"Data Scientist","email":"premdeepkumar@sail.in","phone":"8895502458","tranche":2,"assigned":15,"completed":0,"completionPct":0.0,"status":"Needs escalation","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":88,"name":"Rajat Sharma","entityOrig":"Bokaro Steel Plant","plant":"Bokaro Steel Plant","dept":null,"category":"Plants","grade":"E2","path":"Data Scientist","email":"rajat.sharma@sail.in","phone":"8986876162","tranche":2,"assigned":15,"completed":3,"completionPct":20.0,"status":"On-track","aprCompleted":0,"growth":3,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":89,"name":"Rakesh Kumar Singh","entityOrig":"IISCO Steel Plant","plant":"IISCO Steel Plant","dept":null,"category":"Plants","grade":"E3","path":"Data Scientist","email":"rakesh.singh1@sail.in","phone":"9434777154","tranche":2,"assigned":15,"completed":1,"completionPct":6.7,"status":"Needs attention","aprCompleted":0,"growth":1,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":90,"name":"Ravikant Bhurelal Hatwar","entityOrig":"Bhilai Steel Plant","plant":"Bhilai Steel Plant","dept":null,"category":"Plants","grade":"E0","path":"Data Scientist","email":"rbhatwar@sail.in","phone":"Not available","tranche":2,"assigned":15,"completed":3,"completionPct":20.0,"status":"On-track","aprCompleted":0,"growth":3,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":91,"name":"Shubham Kishore Mishra","entityOrig":"Others","plant":"Others (unspecified)","dept":null,"category":"Departments","grade":"E3","path":"Data Scientist","email":"shubhamkmishra@sail.in","phone":"Not available","tranche":2,"assigned":15,"completed":0,"completionPct":0.0,"status":"Needs escalation","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":92,"name":"Somak Bera","entityOrig":"Durgapur Steel Plant","plant":"Durgapur Steel Plant","dept":null,"category":"Plants","grade":"E2","path":"Data Scientist","email":"berasoma.dsp@sail.in","phone":"Not available","tranche":2,"assigned":15,"completed":0,"completionPct":0.0,"status":"Needs escalation","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":93,"name":"Subhadeep Bakshi","entityOrig":"Durgapur Steel Plant","plant":"Durgapur Steel Plant","dept":null,"category":"Plants","grade":"E3","path":"Data Engineer","email":"subhadeep.bakshi@sail.in","phone":"9434791971","tranche":2,"assigned":12,"completed":9,"completionPct":75.0,"status":"Distinctive","aprCompleted":0,"growth":9,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":94,"name":"Sushant Kumar","entityOrig":"Corporate Office","plant":"Corporate Office","dept":null,"category":"Departments","grade":"E3","path":"Delivery Lead","email":"sushant.kumar@sail.in","phone":"Not available","tranche":2,"assigned":10,"completed":1,"completionPct":10.0,"status":"Needs attention","aprCompleted":0,"growth":1,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":95,"name":"Sushanta Das","entityOrig":"Others","plant":"Others (unspecified)","dept":null,"category":"Departments","grade":"E4","path":"Data Scientist","email":"sushanta.das@sail.in","phone":"Not available","tranche":2,"assigned":15,"completed":0,"completionPct":0.0,"status":"Needs escalation","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":123,"name":"Rakhee Prabhu","entityOrig":"CMO","plant":"CMO","dept":null,"category":"Departments","grade":"E5","path":"Visualization Engineer","email":"rakhee@sail.in","phone":"Not available","tranche":2,"assigned":14,"completed":null,"completionPct":null,"status":"Possible dropout","aprCompleted":0,"growth":null,"notEnrolled":true,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":97,"name":"Vinay Shah","entityOrig":"Bokaro Steel Plant","plant":"Bokaro Steel Plant","dept":null,"category":"Plants","grade":"E1","path":"Visualization Engineer","email":"vinayshah444@gmail.com","phone":"Not available","tranche":2,"assigned":14,"completed":0,"completionPct":0.0,"status":"Needs escalation","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":98,"name":"Vinay Vijay Kambale","entityOrig":"IISCO Steel Plant","plant":"IISCO Steel Plant","dept":null,"category":"Plants","grade":"E2","path":"Data Engineer","email":"vinaykamble1590@gmail.com","phone":"Not available","tranche":2,"assigned":12,"completed":null,"completionPct":null,"status":"Possible dropout","aprCompleted":0,"growth":null,"notEnrolled":true,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":99,"name":"Vinayak Dewangan","entityOrig":"Bhilai Steel Plant","plant":"Bhilai Steel Plant","dept":null,"category":"Plants","grade":"E1","path":"Data Scientist","email":"vinayakd@sail.in","phone":"9407981559","tranche":2,"assigned":15,"completed":0,"completionPct":0.0,"status":"Needs escalation","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":100,"name":"Shrish Shukla","entityOrig":"Mines","plant":"CMLO - CGOM","dept":null,"category":"Plants","grade":"E4","path":"Delivery Lead","email":"shukla.shrish@sail.in","phone":"9407981754","tranche":2,"assigned":10,"completed":0,"completionPct":0.0,"status":"Needs escalation","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":true},{"sn":101,"name":"Tatikola Parimala Sameer Kumar","entityOrig":"Mines","plant":"CMLO - JGOM/KIOM","dept":null,"category":"Plants","grade":"E4","path":"Delivery Lead","email":"tpskumar@sail.in","phone":"9494530885","tranche":2,"assigned":10,"completed":0,"completionPct":0.0,"status":"Needs escalation","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":true},{"sn":102,"name":"Siripuram Sriteja","entityOrig":"Rourkela Steel Plant","plant":"Rourkela Steel Plant","dept":null,"category":"Plants","grade":"E1","path":"Visualization Engineer","email":"s.siripuram@sail.in","phone":"8895503496","tranche":2,"assigned":14,"completed":0,"completionPct":0.0,"status":"Needs escalation","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":103,"name":"Kumar Ashish","entityOrig":"Mines","plant":"CMLO - JGOM/KIOM","dept":null,"category":"Plants","grade":"E4","path":"Delivery Lead","email":"kumarashish@sail.in","phone":"8986881224","tranche":2,"assigned":10,"completed":0,"completionPct":0.0,"status":"Needs escalation","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":true},{"sn":38,"name":"N V Sai Chandra","entityOrig":"L&I","plant":"L&I","dept":"Transport & Shipping HQ","category":"Departments","grade":"E4","path":"Data Engineer","email":"chandrasai@sail.in","phone":"9866997500","tranche":1,"assigned":12,"completed":1,"completionPct":8.3,"status":"Needs escalation","aprCompleted":1,"growth":0,"notEnrolled":false,"learningHours":4,"uniqueCourses":1,"daysInactive":0,"mappedFromNew":true},{"sn":105,"name":"Rohan Kumar","entityOrig":"Bokaro Steel Plant","plant":"Bokaro Steel Plant","dept":null,"category":"Plants","grade":"E2","path":"Data Scientist","email":"rohan.kumar@sail.in","phone":"8986875611","tranche":2,"assigned":15,"completed":0,"completionPct":0.0,"status":"Needs escalation","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":106,"name":"Shruti Menon","entityOrig":"Bhilai Steel Plant","plant":"Bhilai Steel Plant","dept":null,"category":"Plants","grade":"E3","path":"Data Engineer","email":"shruti.menon@sail.in","phone":"Not available","tranche":2,"assigned":12,"completed":0,"completionPct":0.0,"status":"Needs escalation","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":107,"name":"Batchu Dharmaraju","entityOrig":"Bhilai Steel Plant","plant":"Bhilai Steel Plant","dept":null,"category":"Plants","grade":"E1","path":"Data Scientist","email":"bdharmaraju@sail.in","phone":"Not available","tranche":2,"assigned":15,"completed":2,"completionPct":13.3,"status":"On-track","aprCompleted":0,"growth":2,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":108,"name":"Pravanjan Bera","entityOrig":"Durgapur Steel Plant","plant":"Durgapur Steel Plant","dept":null,"category":"Plants","grade":"E4","path":"Data Scientist","email":"p.bera@sail.in","phone":"Not available","tranche":2,"assigned":15,"completed":3,"completionPct":20.0,"status":"On-track","aprCompleted":0,"growth":3,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":109,"name":"Shashi Ranjan","entityOrig":"Bokaro Steel Plant","plant":"Bokaro Steel Plant","dept":null,"category":"Plants","grade":"E2","path":"Data Engineer","email":"shashi.ranjan@sail.in","phone":"8986875591","tranche":2,"assigned":12,"completed":0,"completionPct":0.0,"status":"Needs escalation","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":110,"name":"Ajay Kumar","entityOrig":"Rourkela Steel Plant","plant":"Rourkela Steel Plant","dept":null,"category":"Plants","grade":"E1","path":"Data Engineer","email":"a.kumar1@sail.in","phone":"8895500085","tranche":2,"assigned":12,"completed":4,"completionPct":33.3,"status":"Distinctive","aprCompleted":0,"growth":4,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":50,"name":"Rintu George Abraham","entityOrig":"L&I","plant":"L&I","dept":"Transport & Shipping HQ","category":"Departments","grade":"E3","path":"Data Scientist","email":"rintu@sail.in","phone":"9477702237","tranche":1,"assigned":15,"completed":0,"completionPct":0.0,"status":"Possible dropout","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":2,"uniqueCourses":1,"daysInactive":0,"mappedFromNew":true},{"sn":112,"name":"Upendra Prasad Tiwari","entityOrig":"Bhilai Steel Plant","plant":"Bhilai Steel Plant","dept":null,"category":"Plants","grade":"E1","path":"Data Engineer","email":"upen0303@gmail.com","phone":"Not available","tranche":2,"assigned":12,"completed":null,"completionPct":null,"status":"Possible dropout","aprCompleted":0,"growth":null,"notEnrolled":true,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":113,"name":"Anjali Rana","entityOrig":"IISCO Steel Plant","plant":"IISCO Steel Plant","dept":null,"category":"Plants","grade":"E3","path":"Data Scientist","email":"anjali@sail.in","phone":"9434776553","tranche":2,"assigned":15,"completed":null,"completionPct":null,"status":"Possible dropout","aprCompleted":0,"growth":null,"notEnrolled":true,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":114,"name":"Gunjan Rana","entityOrig":"IISCO Steel Plant","plant":"IISCO Steel Plant","dept":null,"category":"Plants","grade":"E3","path":"Visualization Engineer","email":"rana.g@sail.in","phone":"9434777108","tranche":2,"assigned":14,"completed":1,"completionPct":7.1,"status":"Needs attention","aprCompleted":0,"growth":1,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":115,"name":"Sandeep Raja Jonnada","entityOrig":"Mines","plant":"CMLO - CGOM","dept":null,"category":"Plants","grade":"E4","path":"Delivery Lead","email":"sandeep.raja89@sail.in","phone":"9502289011","tranche":2,"assigned":10,"completed":null,"completionPct":null,"status":"Possible dropout","aprCompleted":0,"growth":null,"notEnrolled":true,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":true},{"sn":116,"name":"Arup Kumar Mondal","entityOrig":"Rourkela Steel Plant","plant":"Rourkela Steel Plant","dept":null,"category":"Plants","grade":"E3","path":"Data Engineer","email":"arupk.mondal@sail.in","phone":"8895503488","tranche":2,"assigned":12,"completed":0,"completionPct":0.0,"status":"Needs escalation","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":117,"name":"Jojan Joju Das","entityOrig":"Rourkela Steel Plant","plant":"Rourkela Steel Plant","dept":null,"category":"Plants","grade":"E1","path":"Data Scientist","email":"jojanjoju.das@sail.in","phone":"8260503613","tranche":2,"assigned":15,"completed":14,"completionPct":93.3,"status":"Distinctive","aprCompleted":0,"growth":14,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":118,"name":"Retik Kumar","entityOrig":"Rourkela Steel Plant","plant":"Rourkela Steel Plant","dept":null,"category":"Plants","grade":"E1","path":"Data Scientist","email":"retik.kumar@sail.in","phone":"8895504370","tranche":2,"assigned":15,"completed":null,"completionPct":null,"status":"Possible dropout","aprCompleted":0,"growth":null,"notEnrolled":true,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":119,"name":"Vaibhav Kumar Singh","entityOrig":"Durgapur Steel Plant","plant":"Durgapur Steel Plant","dept":null,"category":"Plants","grade":"E4","path":"Data Scientist","email":"vaibhav.singh@sail.in","phone":"9434792000","tranche":2,"assigned":15,"completed":1,"completionPct":6.7,"status":"Needs attention","aprCompleted":0,"growth":1,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":120,"name":"Archana Devi R","entityOrig":"Others","plant":"Others (unspecified)","dept":null,"category":"Departments","grade":"E4","path":"Data Engineer","email":"archana.r@sail.in","phone":"Not available","tranche":2,"assigned":12,"completed":0,"completionPct":0.0,"status":"Needs escalation","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":121,"name":"Jyoti Kumari","entityOrig":"Bokaro Steel Plant","plant":"Bokaro Steel Plant","dept":null,"category":"Plants","grade":"E2","path":"Data Scientist","email":"jyoti.kumari1@sail.in","phone":"8986875607","tranche":2,"assigned":15,"completed":0,"completionPct":0.0,"status":"Needs escalation","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":122,"name":"Manish Kumar","entityOrig":"IISCO Steel Plant","plant":"IISCO Steel Plant","dept":null,"category":"Plants","grade":"E3","path":"Data Engineer","email":"manish.kumar4@sail.in","phone":"Not available","tranche":2,"assigned":12,"completed":null,"completionPct":null,"status":"Possible dropout","aprCompleted":0,"growth":null,"notEnrolled":true,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":82,"name":"Anshu Kumar Dalmia","entityOrig":"L&I","plant":"L&I","dept":null,"category":"Departments","grade":"E6","path":"Visualization Engineer","email":"akdalmia@sail.in","phone":"Not available","tranche":2,"assigned":14,"completed":0,"completionPct":0.0,"status":"Needs escalation","aprCompleted":0,"growth":0,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false},{"sn":124,"name":"Rajat Sharma","entityOrig":"Bokaro Steel Plant","plant":"Bokaro Steel Plant","dept":null,"category":"Plants","grade":"E2","path":"Data Engineer","email":"rajat.sharma@sail.in","phone":"Not available","tranche":2,"assigned":12,"completed":3,"completionPct":25.0,"status":"Distinctive","aprCompleted":0,"growth":3,"notEnrolled":false,"learningHours":null,"uniqueCourses":null,"daysInactive":null,"mappedFromNew":false}];
+let currentTranche = 'ALL';
+function DATA() { return currentTranche === 'ALL' ? DATA_ALL : DATA_ALL.filter(r => String(r.tranche) === currentTranche); }
+
+const STEEL_PLANTS = ['Alloy Steels Plant', 'Bhilai Steel Plant', 'Bokaro Steel Plant', 'CMLO - CGOM', 'CMLO - JGOM', 'CMLO - JGOM/KIOM', 'CMLO - OGOM', 'Durgapur Steel Plant', 'IISCO Steel Plant', 'Rourkela Steel Plant', 'Salem Steel Plant', 'VISP'];
+function getDeptEntities() {
+  return [...new Set(DATA_ALL.filter(r => r.category === 'Departments').map(r => r.plant))].sort();
+}
+const CATEGORIES = { plants: STEEL_PLANTS, departments: getDeptEntities() };
+
+// Display label for each top-level category (internal keys stay 'plants' / 'departments')
+function catLabel(catKey) {
+  if (catKey === 'departments') return 'Central Function';
+  if (catKey === 'plants') return 'Plants & Mines';
+  return catKey.charAt(0).toUpperCase() + catKey.slice(1);
+}
+
+const STATUS_ORDER = ['Distinctive', 'On-track', 'Needs attention', 'Needs escalation', 'Possible dropout'];
+const STATUS_COLORS = {
+  'Distinctive': '#10b981',
+  'On-track': '#3b82f6',
+  'Needs attention': '#fbbf24',
+  'Needs escalation': '#ef4444',
+  'Possible dropout': '#be123c'
+};
+const STATUS_CLASS = {
+  'Distinctive': 'badge-distinctive',
+  'On-track': 'badge-on-track',
+  'Needs attention': 'badge-attention',
+  'Needs escalation': 'badge-escalation',
+  'Possible dropout': 'badge-dropout'
+};
+const STATUS_KPI_CLASS = {
+  'Distinctive': 'good',
+  'On-track': 'on-track',
+  'Needs attention': 'warn',
+  'Needs escalation': 'alert',
+  'Possible dropout': 'dropout'
+};
+
+const panelState = {};
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Tranche counts in toggle (fixed, from full data)
+  document.getElementById('cnt-all-tr').textContent = DATA_ALL.length;
+  document.getElementById('cnt-t1').textContent = DATA_ALL.filter(r=>String(r.tranche)==='1').length;
+  document.getElementById('cnt-t2').textContent = DATA_ALL.filter(r=>String(r.tranche)==='2').length;
+
+  document.querySelectorAll('.tranche-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tranche-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentTranche = btn.dataset.tranche;
+      renderAll();
+    });
+  });
+
+  document.querySelectorAll('.tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    });
+  });
+
+  renderAll();
+});
+
+function renderAll() {
+  updateHeaderCounts();
+  renderOverview();
+  renderCategoryPanel('plants', CATEGORIES.plants);
+  renderCategoryPanel('departments', CATEGORIES.departments);
+  renderAnalytics();
+  renderAllPanel();
+}
+
+function updateHeaderCounts() {
+  const d = DATA();
+  document.getElementById('hdr-total').textContent = d.length;
+  document.getElementById('cnt-plants').textContent = d.filter(r => r.category==='Plants').length;
+  document.getElementById('cnt-departments').textContent = d.filter(r => r.category==='Departments').length;
+  document.getElementById('cnt-all').textContent = d.length;
+  document.getElementById('hdr-plants').textContent = STEEL_PLANTS.length;
+  document.getElementById('hdr-depts').textContent = CATEGORIES.departments.length;
+}
+
+function buildStatusKpiCards(records, context, activeStatus) {
+  // context: 'overview' | 'plants' | 'departments' (drives click behavior)
+  // activeStatus: the currently-active status filter for this panel (highlights matching card)
+  return STATUS_ORDER.map(status => {
+    const count = records.filter(r => r.status === status).length;
+    const pct = records.length ? (count / records.length * 100).toFixed(0) : 0;
+    const isActive = activeStatus === status;
+    const safeStatus = status.replace(/'/g, "\\'");
+    return `<div class="kpi clickable ${STATUS_KPI_CLASS[status]}${isActive ? ' kpi-active' : ''}" onclick="handleStatusCardClick('${context}', '${safeStatus}')">
+      <div class="kpi-label">${status}</div>
+      <div class="kpi-value">${count}</div>
+      <div class="kpi-pct">${pct}% of view</div>
+    </div>`;
+  }).join('');
+}
+
+function handleStatusCardClick(context, status) {
+  if (context === 'overview') {
+    // Jump to All Candidates tab and pre-apply the status filter
+    document.querySelector('.tab[data-tab="all"]').click();
+    setTimeout(() => {
+      panelState.all.status = status;
+      const el = document.getElementById('status-all');
+      if (el) el.value = status;
+      refreshAllTable();
+    }, 120);
+  } else {
+    // Plants / Departments panel: toggle the status filter on the same panel
+    const s = panelState[context];
+    s.status = s.status === status ? 'ALL' : status;
+    const sel = document.getElementById(`status-${context}`);
+    if (sel) sel.value = s.status;
+    refreshTable(context, CATEGORIES[context]);
+  }
+}
+
+function renderOverview() {
+  const d = DATA();
+  const total = d.length;
+  const completed = d.reduce((s, r) => s + (r.completed || 0), 0);
+  const assigned = d.reduce((s, r) => s + (r.assigned || 0), 0);
+  const avgPct = assigned ? (completed / assigned * 100).toFixed(1) : '0';
+  const aprCompleted = d.reduce((s, r) => s + (r.aprCompleted || 0), 0);
+  const growth = completed - aprCompleted;
+  const growthPct = aprCompleted ? ((growth / aprCompleted) * 100).toFixed(0) : '0';
+
+  document.getElementById('overview-kpis-summary').innerHTML = `
+    <div class="kpi"><div class="kpi-label">Total Candidates</div><div class="kpi-value">${total}</div><div class="kpi-pct">${currentTranche === 'ALL' ? 'across both tranches' : 'Tranche ' + currentTranche}</div></div>
+    <div class="kpi copper"><div class="kpi-label">Courses Completed</div><div class="kpi-value">${completed}<span class="unit">/ ${assigned}</span></div><div class="kpi-delta up">▲ +${growth} since April</div></div>
+    <div class="kpi purple"><div class="kpi-label">Overall Completion</div><div class="kpi-value">${avgPct}<span class="unit">%</span></div><div class="kpi-delta ${growth>0?'up':'flat'}">${growth>0?'▲ +'+growthPct+'%':''}</div></div>
+  `;
+
+  document.getElementById('overview-kpis-status').innerHTML = buildStatusKpiCards(d, 'overview', null);
+
+  const statusCounts = {};
+  d.forEach(r => statusCounts[r.status] = (statusCounts[r.status] || 0) + 1);
+  renderDonut('status-donut', statusCounts);
+
+  const entityStats = {};
+  d.forEach(r => {
+    if (!entityStats[r.plant]) entityStats[r.plant] = {completed: 0, assigned: 0};
+    entityStats[r.plant].completed += r.completed || 0;
+    entityStats[r.plant].assigned += r.assigned || 0;
+  });
+  const entRows = Object.entries(entityStats).map(([e, s]) => ({
+    label: e, pct: s.assigned ? (s.completed/s.assigned*100) : 0, raw: `${s.completed}/${s.assigned}`
+  })).sort((a,b) => b.pct - a.pct);
+  renderBars('entity-bars', entRows, true);
+
+  const cards = Object.entries(entityStats).sort((a,b) => b[1].completed - a[1].completed).map(([e, s]) => {
+    const count = d.filter(r => r.plant === e).length;
+    const pct = s.assigned ? (s.completed/s.assigned*100).toFixed(0) : 0;
+    const category = STEEL_PLANTS.includes(e) ? 'plants' : 'departments';
+    return `<div class="entity-card" onclick="jumpToEntity('${e.replace(/'/g, "\\'")}','${category}')">
+      <div class="entity-name">${e}</div>
+      <div class="entity-stats"><span><strong>${count}</strong> ppl</span><span><strong>${s.completed}</strong>/${s.assigned} courses</span><span><strong>${pct}%</strong></span></div>
+      <div class="entity-bar"><div class="entity-bar-fill" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('');
+  document.getElementById('overview-entities').innerHTML = cards;
+}
+
+function jumpToEntity(entity, cat) {
+  document.querySelector(`.tab[data-tab="${cat}"]`).click();
+  setTimeout(() => selectEntityInPanel(cat, entity), 100);
+}
+
+function renderDonut(id, counts) {
+  const el = document.getElementById(id);
+  const total = Object.values(counts).reduce((a,b) => a+b, 0);
+  if (!total) { el.innerHTML = '<div class="empty">No data in current view</div>'; return; }
+  const cx = 80, cy = 80, r = 60, ir = 38;
+  let angle = -Math.PI / 2;
+  const paths = [];
+  STATUS_ORDER.forEach(status => {
+    const cnt = counts[status] || 0;
+    if (!cnt) return;
+    const slice = (cnt / total) * Math.PI * 2;
+    const x1 = cx + r * Math.cos(angle), y1 = cy + r * Math.sin(angle);
+    const x2 = cx + r * Math.cos(angle + slice), y2 = cy + r * Math.sin(angle + slice);
+    const xi1 = cx + ir * Math.cos(angle), yi1 = cy + ir * Math.sin(angle);
+    const xi2 = cx + ir * Math.cos(angle + slice), yi2 = cy + ir * Math.sin(angle + slice);
+    const large = slice > Math.PI ? 1 : 0;
+    paths.push(`<path d="M ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2} L ${xi2} ${yi2} A ${ir} ${ir} 0 ${large} 0 ${xi1} ${yi1} Z" fill="${STATUS_COLORS[status]}" stroke="var(--paper)" stroke-width="2"/>`);
+    angle += slice;
+  });
+  const legend = STATUS_ORDER.filter(s => counts[s]).map(s => `
+    <div class="legend-item">
+      <div class="legend-swatch" style="background:${STATUS_COLORS[s]}"></div>
+      <div class="legend-label">${s}</div>
+      <div class="legend-value">${counts[s]} · ${(counts[s]/total*100).toFixed(0)}%</div>
+    </div>`).join('');
+  el.innerHTML = `<svg class="donut-svg" width="160" height="160" viewBox="0 0 160 160">${paths.join('')}<text x="80" y="76" text-anchor="middle" font-family="Fraunces, serif" font-size="22" font-weight="700" fill="var(--ink)">${total}</text><text x="80" y="92" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="var(--ink-mute)" letter-spacing="2">TOTAL</text></svg><div class="donut-legend">${legend}</div>`;
+}
+
+function renderBars(id, rows, showPct) {
+  if (!rows.length) { document.getElementById(id).innerHTML = '<div class="empty">No data</div>'; return; }
+  const max = Math.max(...rows.map(r => typeof r.pct === 'number' ? r.pct : r.value), 1);
+  const html = rows.map(r => {
+    const w = (typeof r.pct === 'number' ? r.pct : r.value) / max * 100;
+    const display = showPct ? `${(r.pct).toFixed(0)}%` : r.value;
+    return `<div class="bar-row">
+      <div class="bar-label" title="${r.label}">${r.label}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.max(w,0)}%"></div></div>
+      <div class="bar-value">${display}${r.raw ? ` <span style="color:var(--ink-mute); font-weight:400">${r.raw}</span>` : ''}</div>
+    </div>`;
+  }).join('');
+  document.getElementById(id).innerHTML = html;
+}
+
+function renderCategoryPanel(catKey, entities) {
+  const panel = document.getElementById('panel-' + catKey);
+  const catRecords = DATA().filter(r => entities.includes(r.plant));
+  const existingState = panelState[catKey];
+  panelState[catKey] = existingState && existingState.preserve
+    ? existingState
+    : { selectedEntity: 'ALL', search: '', path: 'ALL', status: 'ALL', grade: 'ALL', dept: 'ALL', sortKey: 'name', sortDir: 'asc' };
+
+  panel.innerHTML = `
+    <div class="section-head">
+      <h2 id="head-title-${catKey}">${catLabel(catKey)} <em id="head-sub-${catKey}">· ${catRecords.length} candidates across ${entities.length}</em></h2>
+      <span class="section-meta" id="head-meta-${catKey}">Apr → May courses</span>
+    </div>
+    <div class="kpi-section-title">Summary <span class="sum-note">live · reflects current filters</span></div>
+    <div class="kpi-grid kpi-grid-summary" id="kpis-summary-${catKey}"></div>
+    <div class="kpi-section-title">Status Breakdown <span class="sum-note">all five categories sum to candidates in view</span></div>
+    <div class="kpi-grid" id="kpis-status-${catKey}"></div>
+
+    <div class="sub-tabs" id="sub-tabs-${catKey}">
+      <button class="sub-tab active" data-entity="ALL">All ${catLabel(catKey)} <span style="opacity:0.5">· ${catRecords.length}</span></button>
+      ${entities.map(e => {
+        const c = catRecords.filter(r => r.plant === e).length;
+        return `<button class="sub-tab" data-entity="${e}">${e} <span style="opacity:0.5">· ${c}</span></button>`;
+      }).join('')}
+    </div>
+
+    <div class="filter-bar">
+      <div class="filter-group"><label class="filter-label">Search</label><input type="text" id="search-${catKey}" placeholder="Name or email…"></div>
+      <div class="filter-group"><label class="filter-label">Department</label><select id="dept-${catKey}"></select></div>
+      <div class="filter-group"><label class="filter-label">Path</label><select id="path-${catKey}">
+        <option value="ALL">All Paths</option>
+        ${[...new Set(DATA_ALL.map(r=>r.path))].sort().map(p => `<option value="${p}">${p}</option>`).join('')}
+      </select></div>
+      <div class="filter-group"><label class="filter-label">Status</label><select id="status-${catKey}">
+        <option value="ALL">All Statuses</option>
+        ${STATUS_ORDER.map(s => `<option value="${s}">${s}</option>`).join('')}
+      </select></div>
+      <div class="filter-group"><label class="filter-label">Grade</label><select id="grade-${catKey}">
+        <option value="ALL">All Grades</option>
+        ${[...new Set(DATA_ALL.map(r=>r.grade))].sort().map(g => `<option value="${g}">${g}</option>`).join('')}
+      </select></div>
+      <button class="filter-reset" id="reset-${catKey}">Reset</button>
+    </div>
+
+    <div id="table-host-${catKey}"></div>
+  `;
+
+  rebuildDeptDropdown(catKey, entities);
+
+  panel.querySelectorAll(`#sub-tabs-${catKey} .sub-tab`).forEach(b => {
+    b.addEventListener('click', () => {
+      panel.querySelectorAll(`#sub-tabs-${catKey} .sub-tab`).forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      panelState[catKey].selectedEntity = b.dataset.entity;
+      panelState[catKey].dept = 'ALL';
+      rebuildDeptDropdown(catKey, entities);
+      refreshTable(catKey, entities);
+    });
+  });
+  ['search', 'path', 'status', 'grade', 'dept'].forEach(k => {
+    const el = document.getElementById(`${k}-${catKey}`);
+    el.addEventListener('input', () => { panelState[catKey][k] = el.value; refreshTable(catKey, entities); });
+    el.addEventListener('change', () => { panelState[catKey][k] = el.value; refreshTable(catKey, entities); });
+  });
+  document.getElementById(`reset-${catKey}`).addEventListener('click', () => {
+    panelState[catKey] = { selectedEntity: 'ALL', search: '', path: 'ALL', status: 'ALL', grade: 'ALL', dept: 'ALL', sortKey: 'name', sortDir: 'asc' };
+    document.getElementById(`search-${catKey}`).value = '';
+    ['path', 'status', 'grade', 'dept'].forEach(k => document.getElementById(`${k}-${catKey}`).value = 'ALL');
+    panel.querySelectorAll(`#sub-tabs-${catKey} .sub-tab`).forEach(x => x.classList.remove('active'));
+    panel.querySelector(`#sub-tabs-${catKey} .sub-tab[data-entity="ALL"]`).classList.add('active');
+    rebuildDeptDropdown(catKey, entities);
+    refreshTable(catKey, entities);
+  });
+
+  refreshTable(catKey, entities);
+}
+
+function rebuildDeptDropdown(catKey, entities) {
+  const s = panelState[catKey];
+  let pool = DATA().filter(r => entities.includes(r.plant));
+  if (s.selectedEntity !== 'ALL') pool = pool.filter(r => r.plant === s.selectedEntity);
+  const depts = [...new Set(pool.map(r => r.dept).filter(d => d))].sort();
+  const el = document.getElementById(`dept-${catKey}`);
+  el.innerHTML = `<option value="ALL">All Departments</option>` + depts.map(d => `<option value="${d}">${d}</option>`).join('');
+  if (s.dept !== 'ALL' && depts.includes(s.dept)) el.value = s.dept;
+  else { el.value = 'ALL'; s.dept = 'ALL'; }
+}
+
+function selectEntityInPanel(catKey, entity) {
+  const panel = document.getElementById('panel-' + catKey);
+  panel.querySelectorAll(`#sub-tabs-${catKey} .sub-tab`).forEach(x => x.classList.remove('active'));
+  const btn = panel.querySelector(`#sub-tabs-${catKey} .sub-tab[data-entity="${entity}"]`);
+  if (btn) {
+    btn.classList.add('active');
+    panelState[catKey].selectedEntity = entity;
+    panelState[catKey].dept = 'ALL';
+    rebuildDeptDropdown(catKey, CATEGORIES[catKey]);
+    refreshTable(catKey, CATEGORIES[catKey]);
+  }
+}
+
+function refreshTable(catKey, entities) {
+  const s = panelState[catKey];
+  let rows = DATA().filter(r => entities.includes(r.plant));
+  if (s.selectedEntity !== 'ALL') rows = rows.filter(r => r.plant === s.selectedEntity);
+  if (s.search) {
+    const q = s.search.toLowerCase();
+    rows = rows.filter(r => (r.name||'').toLowerCase().includes(q) || (r.email||'').toLowerCase().includes(q));
+  }
+  if (s.dept !== 'ALL') rows = rows.filter(r => r.dept === s.dept);
+  if (s.path !== 'ALL') rows = rows.filter(r => r.path === s.path);
+  if (s.grade !== 'ALL') rows = rows.filter(r => r.grade === s.grade);
+  // Snapshot of rows BEFORE the status filter is applied — so status cards
+  // stay informative even when a status is selected (you can see what you'd
+  // switch to instead of all zeros)
+  const rowsBeforeStatus = [...rows];
+  if (s.status !== 'ALL') rows = rows.filter(r => r.status === s.status);
+
+  rows = sortRows(rows, s.sortKey, s.sortDir);
+  document.getElementById(`table-host-${catKey}`).innerHTML = renderTable(rows, catKey);
+  updateCategoryKPIs(catKey, entities, rows, rowsBeforeStatus);
+  document.querySelectorAll(`#table-host-${catKey} th[data-sort]`).forEach(th => {
+    th.addEventListener('click', () => {
+      const k = th.dataset.sort;
+      if (s.sortKey === k) s.sortDir = s.sortDir === 'asc' ? 'desc' : 'asc';
+      else { s.sortKey = k; s.sortDir = 'asc'; }
+      refreshTable(catKey, entities);
+    });
+  });
+}
+
+function updateCategoryKPIs(catKey, entities, filteredRows, rowsBeforeStatus) {
+  const s = panelState[catKey];
+  const completed = filteredRows.reduce((sum, r) => sum + (r.completed || 0), 0);
+  const assigned = filteredRows.reduce((sum, r) => sum + (r.assigned || 0), 0);
+  const aprCompleted = filteredRows.reduce((sum, r) => sum + (r.aprCompleted || 0), 0);
+  const growth = completed - aprCompleted;
+  const pct = assigned ? (completed / assigned * 100).toFixed(1) : '0';
+
+  const scope = s.selectedEntity === 'ALL' ? `All ${catLabel(catKey)}` : s.selectedEntity;
+  const trancheLabel = currentTranche === 'ALL' ? '' : ` · Tranche ${currentTranche}`;
+  const activeFilters = [];
+  if (s.dept !== 'ALL') activeFilters.push(`Dept: ${s.dept}`);
+  if (s.path !== 'ALL') activeFilters.push(s.path);
+  if (s.status !== 'ALL') activeFilters.push(s.status);
+  if (s.grade !== 'ALL') activeFilters.push(s.grade);
+  if (s.search) activeFilters.push(`"${s.search}"`);
+  const filterTxt = activeFilters.length ? ` · filtered by ${activeFilters.join(', ')}` : '';
+
+  document.getElementById(`head-sub-${catKey}`).textContent = `· ${scope}${trancheLabel} · ${filteredRows.length} candidates${filterTxt}`;
+  document.getElementById(`head-meta-${catKey}`).textContent = `Apr ${aprCompleted} → May ${completed} courses · ${pct}% complete`;
+
+  const growthDelta = growth > 0
+    ? `<div class="kpi-delta up">▲ +${growth} since April</div>`
+    : (growth < 0 ? `<div class="kpi-delta down">▼ ${growth} since April</div>` : `<div class="kpi-delta flat">no change since April</div>`);
+
+  document.getElementById(`kpis-summary-${catKey}`).innerHTML = `
+    <div class="kpi"><div class="kpi-label">Candidates</div><div class="kpi-value">${filteredRows.length}</div></div>
+    <div class="kpi copper"><div class="kpi-label">Courses Done</div><div class="kpi-value">${completed}<span class="unit">/ ${assigned}</span></div>${growthDelta}</div>
+    <div class="kpi purple"><div class="kpi-label">Completion</div><div class="kpi-value">${pct}<span class="unit">%</span></div></div>
+  `;
+
+  document.getElementById(`kpis-status-${catKey}`).innerHTML = buildStatusKpiCards(rowsBeforeStatus || filteredRows, catKey, s.status);
+}
+
+function sortRows(rows, key, dir) {
+  const m = dir === 'asc' ? 1 : -1;
+  return [...rows].sort((a, b) => {
+    let av = a[key], bv = b[key];
+    if (av == null) av = '';
+    if (bv == null) bv = '';
+    if (typeof av === 'number' && typeof bv === 'number') return (av - bv) * m;
+    return String(av).localeCompare(String(bv)) * m;
+  });
+}
+
+function renderTable(rows, catKey) {
+  if (!rows.length) return '<div class="empty">No candidates match the current filters.</div>';
+  const s = panelState[catKey] || {};
+  const arrow = (k) => s.sortKey === k ? `<span class="sort-ind">${s.sortDir==='asc'?'▲':'▼'}</span>` : '';
+  const fmtPhone = (p) => {
+    if (!p || p === 'Not available' || p === '0' || p === '-' || p === 'None') {
+      return `<span class="phone-na">—</span>`;
+    }
+    const clean = String(p).replace(/\D/g, '');
+    const pretty = clean.length === 10 ? `${clean.slice(0,5)} ${clean.slice(5)}` : clean;
+    return `<a class="phone-link" href="tel:+91${clean}" title="Call ${pretty}">${pretty}</a>`;
+  };
+
+  // Primary sort: plant > dept (unmapped last) > user-chosen key > name fallback
+  const userKey = s.sortKey || 'name';
+  const userDir = s.sortDir === 'desc' ? -1 : 1;
+  const grouped = [...rows].sort((a, b) => {
+    if (a.plant !== b.plant) return a.plant.localeCompare(b.plant);
+    const ad = a.dept || '~~unmapped';
+    const bd = b.dept || '~~unmapped';
+    if (ad !== bd) return ad.localeCompare(bd);
+    // Within plant+dept, apply user sort
+    let av = a[userKey], bv = b[userKey];
+    if (av == null) av = '';
+    if (bv == null) bv = '';
+    let cmp;
+    if (typeof av === 'number' && typeof bv === 'number') cmp = av - bv;
+    else cmp = String(av).localeCompare(String(bv));
+    if (cmp !== 0) return cmp * userDir;
+    return (a.name || '').localeCompare(b.name || '');
+  });
+
+  // Walk through and emit group headers when plant or dept changes
+  const COL_COUNT = 13;
+  let html = '';
+  let curPlant = null, curDept = null;
+  for (let i = 0; i < grouped.length; i++) {
+    const r = grouped[i];
+    if (r.plant !== curPlant) {
+      curPlant = r.plant; curDept = null;
+      const plantRows = grouped.filter(x => x.plant === curPlant);
+      const completed = plantRows.reduce((sum, x) => sum + (x.completed || 0), 0);
+      const assigned = plantRows.reduce((sum, x) => sum + (x.assigned || 0), 0);
+      const pct = assigned ? Math.round(completed / assigned * 100) : 0;
+      const distinctive = plantRows.filter(x => x.status === 'Distinctive').length;
+      const escalation = plantRows.filter(x => x.status === 'Needs escalation').length;
+      const dropout = plantRows.filter(x => x.status === 'Possible dropout').length;
+      const isPlant = STEEL_PLANTS.includes(curPlant);
+      html += `<tr class="group-plant ${isPlant ? 'is-plant' : 'is-dept'}"><td colspan="${COL_COUNT}">
+        <span class="grp-name">${curPlant}</span>
+        <span class="grp-meta">${plantRows.length} candidates · ${completed}/${assigned} courses · <strong>${pct}%</strong> complete</span>
+        <span class="grp-tags">
+          ${distinctive ? `<span class="grp-tag good">${distinctive} Distinctive</span>` : ''}
+          ${escalation ? `<span class="grp-tag alert">${escalation} Escalation</span>` : ''}
+          ${dropout ? `<span class="grp-tag dropout">${dropout} Dropout</span>` : ''}
+        </span>
+      </td></tr>`;
+    }
+    const dKey = r.dept || '__UNMAPPED__';
+    if (dKey !== curDept) {
+      curDept = dKey;
+      const deptRows = grouped.filter(x => x.plant === curPlant && (x.dept || '__UNMAPPED__') === curDept);
+      const dCompleted = deptRows.reduce((sum, x) => sum + (x.completed || 0), 0);
+      const dAssigned = deptRows.reduce((sum, x) => sum + (x.assigned || 0), 0);
+      const dPct = dAssigned ? Math.round(dCompleted / dAssigned * 100) : 0;
+      const label = r.dept ? r.dept : '<em>Section unmapped</em>';
+      html += `<tr class="group-dept"><td colspan="${COL_COUNT}">
+        <span class="grp-dept-marker">↳</span>
+        <span class="grp-dept-name">${label}</span>
+        <span class="grp-meta-sm">${deptRows.length} ${deptRows.length === 1 ? 'person' : 'people'} · ${dCompleted}/${dAssigned} · ${dPct}%</span>
+      </td></tr>`;
+    }
+    const completedDisp = r.notEnrolled ? '<span style="color:var(--ink-mute); font-style:italic">N/E</span>' : (r.completed ?? '-');
+    const pctDisp = r.notEnrolled ? '—' : (r.completionPct != null ? `${r.completionPct.toFixed(0)}%` : '—');
+    const growthCls = r.growth == null ? 'growth-flat' : (r.growth > 0 ? 'growth-up' : (r.growth < 0 ? 'growth-down' : 'growth-flat'));
+    const growthDisp = r.growth == null ? '—' : (r.growth > 0 ? `+${r.growth}` : r.growth);
+    html += `<tr>
+      <td class="name">${r.name}</td>
+      <td>${r.plant}</td>
+      <td class="dept">${r.dept ? r.dept : `<span class="unmapped">unmapped</span>`}</td>
+      <td>${r.grade}</td>
+      <td>${r.path}</td>
+      <td class="email">${r.email}</td>
+      <td class="phone">${fmtPhone(r.phone)}</td>
+      <td class="num">T${r.tranche}</td>
+      <td class="num">${r.assigned ?? '-'}</td>
+      <td class="num">${completedDisp}</td>
+      <td class="pct">${pctDisp}</td>
+      <td class="growth-cell ${growthCls}">${growthDisp}</td>
+      <td><span class="badge ${STATUS_CLASS[r.status] || ''}">${r.status}</span></td>
+    </tr>`;
+  }
+
+  const distinctPlants = new Set(grouped.map(r => r.plant)).size;
+  const distinctDepts = new Set(grouped.map(r => r.dept || '__u__')).size;
+
+  return `<div class="table-wrap"><table>
+    <thead><tr>
+      <th data-sort="name">Name${arrow('name')}</th>
+      <th data-sort="plant">Plant / Entity${arrow('plant')}</th>
+      <th data-sort="dept">Section${arrow('dept')}</th>
+      <th data-sort="grade">Grade${arrow('grade')}</th>
+      <th data-sort="path">Path${arrow('path')}</th>
+      <th>Email</th>
+      <th>Phone</th>
+      <th data-sort="tranche">Tr.${arrow('tranche')}</th>
+      <th data-sort="assigned">Asgn${arrow('assigned')}</th>
+      <th data-sort="completed">Done${arrow('completed')}</th>
+      <th data-sort="completionPct">%${arrow('completionPct')}</th>
+      <th data-sort="growth">Δ Apr→May${arrow('growth')}</th>
+      <th data-sort="status">Status${arrow('status')}</th>
+    </tr></thead>
+    <tbody>${html}</tbody>
+  </table></div><div style="margin-top:12px; font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--ink-mute)">Showing <strong style="color:var(--ink)">${rows.length}</strong> candidates grouped into <strong style="color:var(--ink)">${distinctPlants}</strong> ${distinctPlants===1?'entity':'entities'} &amp; <strong style="color:var(--ink)">${distinctDepts}</strong> section${distinctDepts===1?'':'s'} · clicking a column header sorts <em>within</em> each section · phone numbers click-to-dial</div>`;
+}
+
+function renderAllPanel() {
+  const panel = document.getElementById('panel-all');
+  panelState['all'] = { selectedEntity: 'ALL', search: '', path: 'ALL', status: 'ALL', grade: 'ALL', dept: 'ALL', sortKey: 'name', sortDir: 'asc' };
+  const allEntities = [...new Set(DATA().map(r => r.plant))].sort();
+  const allDepts = [...new Set(DATA().map(r => r.dept).filter(d => d))].sort();
+  const trancheLabel = currentTranche === 'ALL' ? 'complete roster' : `Tranche ${currentTranche} only`;
+
+  panel.innerHTML = `
+    <div class="section-head"><h2>All Candidates <em>· ${trancheLabel}</em></h2><span class="section-meta">${DATA().length} records</span></div>
+    <div class="filter-bar">
+      <div class="filter-group"><label class="filter-label">Search</label><input type="text" id="search-all" placeholder="Name or email…"></div>
+      <div class="filter-group"><label class="filter-label">Plant / Entity</label><select id="entity-all">
+        <option value="ALL">All</option>
+        ${allEntities.map(e => `<option value="${e}">${e}</option>`).join('')}
+      </select></div>
+      <div class="filter-group"><label class="filter-label">Department</label><select id="dept-all">
+        <option value="ALL">All Departments</option>
+        ${allDepts.map(d => `<option value="${d}">${d}</option>`).join('')}
+      </select></div>
+      <div class="filter-group"><label class="filter-label">Path</label><select id="path-all">
+        <option value="ALL">All Paths</option>
+        ${[...new Set(DATA_ALL.map(r=>r.path))].sort().map(p => `<option value="${p}">${p}</option>`).join('')}
+      </select></div>
+      <div class="filter-group"><label class="filter-label">Status</label><select id="status-all">
+        <option value="ALL">All Statuses</option>
+        ${STATUS_ORDER.map(s => `<option value="${s}">${s}</option>`).join('')}
+      </select></div>
+      <div class="filter-group"><label class="filter-label">Grade</label><select id="grade-all">
+        <option value="ALL">All Grades</option>
+        ${[...new Set(DATA_ALL.map(r=>r.grade))].sort().map(g => `<option value="${g}">${g}</option>`).join('')}
+      </select></div>
+      <button class="filter-reset" id="reset-all">Reset</button>
+    </div>
+    <div id="table-host-all"></div>
+  `;
+  ['search', 'path', 'status', 'grade', 'dept'].forEach(k => {
+    const el = document.getElementById(`${k}-all`);
+    el.addEventListener('input', () => { panelState.all[k] = el.value; refreshAllTable(); });
+    el.addEventListener('change', () => { panelState.all[k] = el.value; refreshAllTable(); });
+  });
+  const eEl = document.getElementById('entity-all');
+  eEl.addEventListener('change', () => { panelState.all.selectedEntity = eEl.value; refreshAllTable(); });
+  document.getElementById('reset-all').addEventListener('click', () => {
+    panelState.all = { selectedEntity: 'ALL', search: '', path: 'ALL', status: 'ALL', grade: 'ALL', dept: 'ALL', sortKey: 'name', sortDir: 'asc' };
+    document.querySelectorAll('#panel-all input, #panel-all select').forEach(x => x.value = x.tagName === 'SELECT' ? 'ALL' : '');
+    refreshAllTable();
+  });
+  refreshAllTable();
+}
+
+function refreshAllTable() {
+  const s = panelState.all;
+  let rows = [...DATA()];
+  if (s.selectedEntity !== 'ALL') rows = rows.filter(r => r.plant === s.selectedEntity);
+  if (s.search) {
+    const q = s.search.toLowerCase();
+    rows = rows.filter(r => (r.name||'').toLowerCase().includes(q) || (r.email||'').toLowerCase().includes(q));
+  }
+  if (s.dept !== 'ALL') rows = rows.filter(r => r.dept === s.dept);
+  if (s.path !== 'ALL') rows = rows.filter(r => r.path === s.path);
+  if (s.status !== 'ALL') rows = rows.filter(r => r.status === s.status);
+  if (s.grade !== 'ALL') rows = rows.filter(r => r.grade === s.grade);
+  rows = sortRows(rows, s.sortKey, s.sortDir);
+  document.getElementById('table-host-all').innerHTML = renderTable(rows, 'all');
+  document.querySelectorAll(`#table-host-all th[data-sort]`).forEach(th => {
+    th.addEventListener('click', () => {
+      const k = th.dataset.sort;
+      if (s.sortKey === k) s.sortDir = s.sortDir === 'asc' ? 'desc' : 'asc';
+      else { s.sortKey = k; s.sortDir = 'asc'; }
+      refreshAllTable();
+    });
+  });
+}
+
+function renderAnalytics() {
+  const d = DATA();
+  const completed = d.reduce((s,r) => s + (r.completed || 0), 0);
+  const aprCompleted = d.reduce((s,r) => s + (r.aprCompleted || 0), 0);
+  const growth = completed - aprCompleted;
+  const growthPct = aprCompleted ? ((growth / aprCompleted) * 100).toFixed(1) : '0';
+  const movers = d.filter(r => r.growth > 0).length;
+  const stalled = d.filter(r => r.growth === 0).length;
+  const declined = d.filter(r => r.growth < 0).length;
+
+  document.getElementById('analytics-kpis').innerHTML = `
+    <div class="kpi copper"><div class="kpi-label">Total Growth</div><div class="kpi-value">+${growth}<span class="unit"> courses</span></div><div class="kpi-delta up">▲ ${growthPct}% over April</div></div>
+    <div class="kpi good"><div class="kpi-label">Active Movers</div><div class="kpi-value">${movers}</div><div class="kpi-pct">completed new courses</div></div>
+    <div class="kpi warn"><div class="kpi-label">Stalled</div><div class="kpi-value">${stalled}</div><div class="kpi-pct">no progress since April</div></div>
+    <div class="kpi alert"><div class="kpi-label">Declined</div><div class="kpi-value">${declined}</div></div>
+  `;
+
+  const maxVal = Math.max(completed, aprCompleted, 1);
+  document.getElementById('growth-totals').innerHTML = `
+    <div class="growth-month-row"><div class="growth-month-label">April</div><div class="growth-bar-container"><div class="growth-bar april" style="width:${aprCompleted/maxVal*100}%">${aprCompleted}</div></div></div>
+    <div class="growth-month-row"><div class="growth-month-label">May</div><div class="growth-bar-container"><div class="growth-bar" style="width:${completed/maxVal*100}%">${completed}</div></div></div>
+    <div class="growth-summary"><div class="growth-summary-stat">+${growth} <span style="font-size:14px; color:var(--ink-soft); font-weight:400; -webkit-text-fill-color: var(--ink-soft);">courses completed in 39 days</span></div><div class="growth-summary-label">= ${(growth/39).toFixed(1)} courses / day across cohort</div></div>
+  `;
+
+  const entGrowth = {};
+  d.forEach(r => {
+    if (!entGrowth[r.plant]) entGrowth[r.plant] = 0;
+    entGrowth[r.plant] += (r.growth || 0);
+  });
+  const grRows = Object.entries(entGrowth).map(([e,v]) => ({label: e, value: v})).sort((a,b) => b.value - a.value);
+  renderBars('growth-by-entity', grRows, false);
+
+  const pathStats = {};
+  d.forEach(r => {
+    if (!pathStats[r.path]) pathStats[r.path] = {c:0, a:0, n:0};
+    pathStats[r.path].c += r.completed || 0;
+    pathStats[r.path].a += r.assigned || 0;
+    pathStats[r.path].n += 1;
+  });
+  const pathRows = Object.entries(pathStats).map(([p,s]) => ({
+    label: `${p} (${s.n})`, pct: s.a ? s.c/s.a*100 : 0, raw: `${s.c}/${s.a}`
+  })).sort((a,b) => b.pct - a.pct);
+  renderBars('path-bars', pathRows, true);
+
+  const top = [...d].filter(r => r.growth != null).sort((a,b) => b.growth - a.growth).slice(0, 10);
+  const topRows = top.map(r => ({
+    label: `${r.name} (${r.plant.split(' ')[0]})`, value: r.growth, raw: `${r.aprCompleted}→${r.completed}`
+  }));
+  renderBars('top-movers', topRows, false);
+
+  const deptStats = {};
+  d.forEach(r => {
+    if (!r.dept) return;
+    if (!deptStats[r.dept]) deptStats[r.dept] = {c:0, a:0, n:0};
+    deptStats[r.dept].c += r.completed || 0;
+    deptStats[r.dept].a += r.assigned || 0;
+    deptStats[r.dept].n += 1;
+  });
+  const deptRows = Object.entries(deptStats).map(([d,s]) => ({
+    label: `${d} (${s.n})`, pct: s.a ? s.c/s.a*100 : 0, raw: `${s.c}/${s.a}`
+  })).sort((a,b) => b.pct - a.pct);
+  renderBars('dept-bars', deptRows, true);
+}
+</script>
+</body>
+</html>
